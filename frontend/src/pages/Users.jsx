@@ -5,6 +5,7 @@ import api from '../lib/api';
 export default function Users() {
   const [users, setUsers] = useState(null);
   const [error, setError] = useState('');
+  const [needsSetup, setNeedsSetup] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -14,8 +15,15 @@ export default function Users() {
   const loadUsers = () => {
     api
       .get('/users')
-      .then(({ data }) => setUsers(data.users))
-      .catch((err) => setError(err.response?.data?.error || 'Could not load users'));
+      .then(({ data }) => {
+        setUsers(data.users);
+        setNeedsSetup(false);
+      })
+      .catch((err) => {
+        const msg = err.response?.data?.error || 'Could not load users';
+        setError(msg);
+        if (/not configured|Missing GOOGLE/i.test(msg)) setNeedsSetup(true);
+      });
   };
 
   useEffect(() => {
@@ -58,13 +66,25 @@ export default function Users() {
         <p>Add a user, link their video sheet, then choose where their videos get posted.</p>
       </div>
 
-      {error && <div className="error-text">{error}</div>}
+      {needsSetup && (
+        <div className="empty-state" style={{ marginBottom: 20 }}>
+          <h3>Let's connect Google Sheets first</h3>
+          <p>Auto Media stores users and video data in Google Sheets. Add your service account and master sheet in Settings before adding users.</p>
+          <Link to="/settings" className="btn btn-primary">
+            Go to Settings
+          </Link>
+        </div>
+      )}
 
-      <div style={{ marginBottom: 20 }}>
-        <button className="btn btn-primary" onClick={() => setShowForm((s) => !s)}>
-          {showForm ? 'Cancel' : '+ Add user'}
-        </button>
-      </div>
+      {error && !needsSetup && <div className="error-text">{error}</div>}
+
+      {!needsSetup && (
+        <div style={{ marginBottom: 20 }}>
+          <button className="btn btn-primary" onClick={() => setShowForm((s) => !s)}>
+            {showForm ? 'Cancel' : '+ Add user'}
+          </button>
+        </div>
+      )}
 
       {showForm && (
         <form className="card" style={{ maxWidth: 480, marginBottom: 24 }} onSubmit={handleAddUser}>

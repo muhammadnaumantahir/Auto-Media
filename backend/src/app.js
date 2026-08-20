@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const sheetsRoutes = require('./routes/sheets');
 const videosRoutes = require('./routes/videos');
 const usersRoutes = require('./routes/users');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sheets', sheetsRoutes);
 app.use('/api/videos', videosRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

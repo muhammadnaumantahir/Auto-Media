@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const { loadSheet } = require('../config/googleSheetsClient');
 const { encrypt, decrypt } = require('./crypto');
+const settingsStore = require('./settingsStore');
 
 const SHEET_TITLE = 'Users';
 
@@ -22,7 +23,14 @@ const HEADERS = [
 ];
 
 async function getUsersSheet() {
-  const doc = await loadSheet(process.env.MASTER_SHEET_ID);
+  const { masterSheetId } = settingsStore.getSettings();
+  const sheetId = masterSheetId || process.env.MASTER_SHEET_ID;
+  if (!sheetId) {
+    throw new Error(
+      'No master sheet configured yet. Go to Settings in the app and add your master Google Sheet.'
+    );
+  }
+  const doc = await loadSheet(sheetId);
   let sheet = doc.sheetsByTitle[SHEET_TITLE];
   if (!sheet) {
     sheet = await doc.addSheet({ title: SHEET_TITLE, headerValues: HEADERS });

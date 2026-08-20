@@ -1,18 +1,27 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
+const settingsStore = require('../services/settingsStore');
 
 /**
  * Returns an authenticated JWT client for the Google service account.
  * This same identity is used to read/write the master Users sheet and,
  * once a user shares their own video sheet with it, that sheet too.
+ *
+ * Credentials are read from the Settings page (settingsStore) first,
+ * falling back to env vars for anyone who prefers configuring it that way.
  */
 function getServiceAccountAuth() {
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+  const settings = settingsStore.getSettings();
+  const email = settings.googleServiceAccountEmail || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const key = (
+    settings.googleServiceAccountPrivateKey ||
+    process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ||
+    ''
+  ).replace(/\\n/g, '\n');
 
   if (!email || !key) {
     throw new Error(
-      'Missing GOOGLE_SERVICE_ACCOUNT_EMAIL / GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY in .env'
+      'Google Sheets is not configured yet. Go to Settings in the app and add your service account email and private key.'
     );
   }
 

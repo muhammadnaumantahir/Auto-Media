@@ -2,11 +2,21 @@ const crypto = require('crypto');
 
 const ALGORITHM = 'aes-256-cbc';
 
+// Falls back to the same auto-generated key used by settingsStore.js so
+// nothing here requires a manually-set env var. TOKEN_ENCRYPTION_KEY still
+// works if you prefer to set it explicitly.
 function getKey() {
-  const key = process.env.TOKEN_ENCRYPTION_KEY || '';
-  if (key.length !== 32) {
-    throw new Error('TOKEN_ENCRYPTION_KEY must be exactly 32 characters');
+  const envKey = process.env.TOKEN_ENCRYPTION_KEY || '';
+  if (envKey) {
+    if (envKey.length !== 32) {
+      throw new Error('TOKEN_ENCRYPTION_KEY must be exactly 32 characters');
+    }
+    return Buffer.from(envKey, 'utf8');
   }
+
+  // Lazy require to avoid a require-cycle at module load time.
+  const settingsStore = require('./settingsStore');
+  const key = settingsStore._getEncryptionKey();
   return Buffer.from(key, 'utf8');
 }
 

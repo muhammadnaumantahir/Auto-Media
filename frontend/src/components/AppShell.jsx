@@ -13,6 +13,9 @@ export default function AppShell() {
           <NavLink to="/" end className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}>
             Users
           </NavLink>
+          <NavLink to="/settings" className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}>
+            Settings
+          </NavLink>
         </nav>
       </aside>
 
