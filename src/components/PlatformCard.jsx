@@ -1,0 +1,82 @@
+import { useState } from "react";
+
+export default function PlatformCard({ platform, saved, onSave, onRemove }) {
+  const [values, setValues] = useState(() => {
+    const initial = {};
+    platform.fields.forEach((f) => {
+      initial[f.key] = saved?.[f.key] || "";
+    });
+    return initial;
+  });
+  const [saving, setSaving] = useState(false);
+
+  const isConnected = !!saved;
+  const allFilled = platform.fields.every((f) => values[f.key]?.trim());
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await onSave(platform.id, values);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="card p-5 flex flex-col gap-4">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center font-display font-bold text-sm"
+            style={{ background: `${platform.color}1A`, color: platform.color }}
+          >
+            {platform.short}
+          </div>
+          <div>
+            <p className="font-display font-semibold text-sm">{platform.name}</p>
+            <p className="text-[11px] text-muted">{platform.description}</p>
+          </div>
+        </div>
+        <span
+          className={`text-[10px] font-mono px-2 py-1 rounded-full border ${
+            isConnected
+              ? "border-teal/40 text-teal bg-teal/10"
+              : "border-border text-muted"
+          }`}
+        >
+          {isConnected ? "● connected" : "○ not connected"}
+        </span>
+      </div>
+
+      <div className="grid gap-3">
+        {platform.fields.map((f) => (
+          <div key={f.key}>
+            <span className="label">{f.label}</span>
+            <input
+              type={f.secret ? "password" : "text"}
+              className="input font-mono text-xs"
+              placeholder={f.placeholder}
+              value={values[f.key]}
+              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-2 pt-1">
+        <button
+          className="btn-primary flex-1 disabled:cursor-not-allowed"
+          disabled={!allFilled || saving}
+          onClick={handleSave}
+        >
+          {saving ? "Saving…" : isConnected ? "Update keys" : "Save & connect"}
+        </button>
+        {isConnected && (
+          <button className="btn-ghost" onClick={() => onRemove(platform.id)}>
+            Disconnect
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
