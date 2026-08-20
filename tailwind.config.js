@@ -22,7 +22,7 @@ export default {
         mono: ["'JetBrains Mono'", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(124,92,255,0.25), 0 8px 30px -6px rgba(124,92,255,0.35)",
+        glow: "0 0 0 1px rgba(124,92,255,0.25), 0 10px 36px -10px rgba(124,92,255,0.42)",
       },
       keyframes: {
         dash: {
@@ -46,6 +46,7 @@ export default {
         pulseSoft: "pulseSoft 2s ease-in-out infinite",
         "fade-up": "fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both",
         "pop-in": "popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "soft-pulse": "pulseSoft 3s ease-in-out infinite",
       },
     },
   },

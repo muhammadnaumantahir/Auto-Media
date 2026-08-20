@@ -1,49 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { watchUsers } from "../lib/firestore";
-
-const AppContext = createContext(null);
-
-export function AppProvider({ children }) {
-  const [users, setUsers] = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(true);
-  const [activeUserId, setActiveUserId] = useState(
-    () => localStorage.getItem("automedia:activeUserId") || null
-  );
-
-  useEffect(() => {
-    const unsub = watchUsers((list) => {
-      setUsers(list);
-      setLoadingUsers(false);
-    });
-    return unsub;
-  }, []);
-
-  useEffect(() => {
-    if (activeUserId) {
-      localStorage.setItem("automedia:activeUserId", activeUserId);
-    }
-  }, [activeUserId]);
-
-  // If no active user is chosen yet, default to the most recently created one.
-  useEffect(() => {
-    if (!activeUserId && users.length > 0) {
-      setActiveUserId(users[0].id);
-    }
-  }, [users, activeUserId]);
-
-  const activeUser = users.find((u) => u.id === activeUserId) || null;
-
-  return (
-    <AppContext.Provider
-      value={{ users, loadingUsers, activeUserId, setActiveUserId, activeUser }}
-    >
-      {children}
-    </AppContext.Provider>
-  );
-}
-
-export function useApp() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error("useApp must be used within AppProvider");
-  return ctx;
-}
+import { createContext,useContext,useEffect,useState } from 'react';
+import { onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut } from 'firebase/auth';
+import { auth } from '../firebase';
+import { watchUsers,syncUserToFirebase,syncFirebaseToLocal } from '../lib/firestore';
+const AppContext=createContext(null);
+export function AppProvider({children}){const [users,setUsers]=useState([]),[loadingUsers,setLoadingUsers]=useState(true),[watcherError,setWatcherError]=useState(null),[authUser,setAuthUser]=useState(null),[syncing,setSyncing]=useState(false);const [activeUserId,setActiveUserId]=useState(()=>localStorage.getItem('automedia:activeUserId')||null);
+useEffect(()=>{const u=watchUsers((list,err)=>{if(err){setWatcherError(err);setLoadingUsers(false);return}setUsers(list||[]);setWatcherError(null);setLoadingUsers(false)});return u},[]);
+useEffect(()=>onAuthStateChanged(auth,setAuthUser),[]);
+useEffect(()=>{activeUserId?localStorage.setItem('automedia:activeUserId',activeUserId):localStorage.removeItem('automedia:activeUserId')},[activeUserId]);
+useEffect(()=>{if(!loadingUsers&&users.length&&!users.some(u=>u.id===activeUserId))setActiveUserId(users[0].id);if(!loadingUsers&&!users.length)setActiveUserId(null)},[users,activeUserId,loadingUsers]);
+const activeUser=users.find(u=>u.id===activeUserId)||null;
+async function loginWithGoogle(){const result=await signInWithPopup(auth,new GoogleAuthProvider());setAuthUser(result.user);setSyncing(true);try{await syncFirebaseToLocal(result.user.uid);const latest=await (await import('../lib/firestore')).getUsers();for(const u of latest)await syncUserToFirebase(u,result.user.uid)}finally{setSyncing(false)}}
+async function syncNow(){if(!authUser)throw new Error('Sign in with Google first.');setSyncing(true);try{for(const u of users)await syncUserToFirebase(u,authUser.uid)}finally{setSyncing(false)}}
+return <AppContext.Provider value={{users,loadingUsers,activeUserId,setActiveUserId,activeUser,watcherError,authUser,loginWithGoogle,logout:()=>signOut(auth),syncNow,syncing}}>{children}</AppContext.Provider>}
+export function useApp(){const c=useContext(AppContext);if(!c)throw new Error('useApp must be used within AppProvider');return c}

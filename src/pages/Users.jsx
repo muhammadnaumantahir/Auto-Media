@@ -19,8 +19,9 @@ export default function Users() {
     }
     setSubmitting(true);
     try {
-      const ref = await createUser({ name: name.trim(), email: email.trim() });
-      setActiveUserId(ref.id);
+      const result = await createUser({ name: name.trim(), email: email.trim() });
+      setActiveUserId(result.id);
+      if (result.exists) setError("This user already exists — the existing profile is now active.");
       setName("");
       setEmail("");
     } catch (err) {
@@ -34,14 +35,13 @@ export default function Users() {
     <div className="max-w-4xl">
       <header className="mb-8 animate-fade-up">
         <p className="label">Step 01</p>
-        <h1 className="font-display text-2xl font-semibold">Add a user</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-tight">Your workspace</h1>
         <p className="text-muted text-sm mt-1">
-          Each user gets their own spreadsheet connection and their own set of platform
-          accounts — nothing is shared between them.
+          Create or select a profile. Everything is saved in Firebase and restored automatically after refresh.
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="card p-6 grid gap-4 mb-10 animate-fade-up" style={{ animationDelay: "40ms" }}>
+      <form onSubmit={handleSubmit} className="card p-6 md:p-8 grid gap-5 mb-10 animate-fade-up" style={{ animationDelay: "40ms" }}>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <span className="label">Full name</span>
@@ -63,7 +63,7 @@ export default function Users() {
             />
           </div>
         </div>
-        {error && <p className="text-rose text-xs">{error}</p>}
+        {error && <p className="text-amber text-xs rounded-lg border border-amber/20 bg-amber/5 px-3 py-2">{error}</p>}
         <div>
           <button className="btn-primary" disabled={submitting}>
             {submitting ? "Adding…" : "Add user"}

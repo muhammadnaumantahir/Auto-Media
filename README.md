@@ -1,144 +1,54 @@
-# Auto-Media — Sheet to Social (Phase 1)
+# Auto-Media
 
-A web app that connects a user's Google Sheet (video name / link / status columns) to a set
-of social platform connectors, so a future posting job can read "ready" rows and publish them
-out to YouTube, Instagram, Facebook, TikTok, and Snapchat.
+A local-first multi-platform video publishing workspace. No Express server and no `/api` proxy are required.
 
-**Phase 1 scope** (this build):
-1. Add / manage users
-2. Connect a Google Sheet and map its columns
-3. Save each platform's API keys per user
-4. A dashboard summarizing what's connected
-
-All data is stored in Firebase Firestore. Firebase project keys live in one file:
-`src/firebaseConfig.js`.
-
-Actually *posting* videos out to each platform is Phase 2 — it needs a server (Firebase Cloud
-Functions is the natural fit) because platform OAuth flows and long-lived tokens shouldn't be
-handled fully client-side. Phase 1 gets everything set up and stored so that job has what it
-needs.
-
----
-
-## 1. Create the Firebase project
-
-1. Go to [console.firebase.google.com](https://console.firebase.google.com) → **Add project**.
-2. Once created, go to **Build → Firestore Database → Create database** → start in **test mode**
-   (good enough for local dev; see the security note at the bottom).
-3. Go to **Project settings → General → Your apps → Add app → Web (`</>`)**. Register the app —
-   you don't need Firebase Hosting for this.
-4. Copy the `firebaseConfig` object it gives you.
-
-## 2. Add your keys to the project
-
-Open `src/firebaseConfig.js` and paste in the values from step 1:
-
-```js
-export const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "...",
-};
-```
-
-This is the one file that holds your Firebase keys, as requested — nothing else in the project
-needs editing to get it running. It's listed in `.gitignore` once you fill it in, so it's safe
-from an accidental commit.
-
-### Optional: Google Sheets read access
-
-To let the app read a sheet's header row for column-mapping (Step 02), also fill in:
-
-```js
-export const googleSheetsApiKey = "...";
-```
-
-Get one at [console.cloud.google.com](https://console.cloud.google.com):
-**APIs & Services → Library → enable "Google Sheets API"**, then
-**APIs & Services → Credentials → Create credentials → API key**. Restrict it to the Sheets API.
-
-The sheet itself needs to be shared as **"Anyone with the link – Viewer"** for this API-key-only
-read to work (no OAuth needed for Phase 1). If you'd rather keep sheets private, that's a Phase 2
-change (OAuth + a server-side call).
-
-## 3. Install and run
-
-Requires [Node.js](https://nodejs.org) 18+.
-
+## Run
 ```bash
-cd social-poster-app
 npm install
 npm run dev
 ```
+Build with `npm run build`.
 
-Open the URL it prints (usually `http://localhost:5173`).
+## Data storage
+All application data is stored in one browser persistence record:
+`automedia_data_v1`.
+It contains users, sheet mappings, connector settings, queue items and preferences. Refreshing the app reloads this data immediately. Clearing browser site data will remove the local copy, so use the Firebase sync option for backup/cross-device use.
 
-## 4. Using it
+## Workflow
+1. Create/select a user.
+2. Add a Google Sheet URL and tab name.
+3. Enable Google Sheets API and put the API key in `src/firebaseConfig.js`.
+4. Share the sheet appropriately for the selected API-key approach, then read row-1 headers.
+5. Map Video, Title, Description, Tags, Thumbnail, Schedule, Platforms and Status to any columns you use.
+6. Select connectors and follow each connector's setup checklist.
+7. Add/validate content in Queue and track Draft, Ready, Scheduled, Publishing, Published or Failed.
 
-1. **Users** — add a name + email. This becomes the active user for the rest of the flow.
-2. **Sheet** — paste the sheet's URL (or just its ID) and its tab name, click **Read column
-   headers**, then match `Video name`, `Video link`, and `Status` to the sheet's actual columns.
-   Your sheet just needs those three ideas as headers in row 1 — call them whatever you like.
-3. **Connectors** — paste each platform's credentials. What's asked for per platform:
-   - **YouTube** — OAuth client ID/secret + refresh token (from a Google Cloud OAuth app with
-     the YouTube Data API v3 enabled) + channel ID
-   - **Instagram** — a Graph API access token + the IG business account ID
-   - **Facebook** — a Page access token + Page ID
-   - **TikTok** — client key/secret + access token (Content Posting API)
-   - **Snapchat** — client ID/secret + access token (Marketing/Creative API)
+## Firebase / Google login
+Google login is optional. Configure the Firebase web config in `src/firebaseConfig.js`, enable Google sign-in in Firebase Authentication and create Firestore as required by your project. Local storage remains the primary app store; Firebase is used for optional profile backup/sync.
 
-   None of these need to be filled in to try the rest of the app — connect whichever platforms
-   you're ready for.
-4. **Dashboard** — a summary of the sheet mapping and which platforms are connected for the
-   active user, plus the pipeline visual.
+## Connector setup model
+Each Auto-Media user configures their own platform account and developer application. The app stores connector metadata locally and provides the workflow; real publishing requires that platform's approved OAuth/API access.
 
-Switch users any time from the dropdown at the bottom of the sidebar — each one has their own
-sheet connection and connector keys.
+### YouTube
+Create a Google Cloud project, enable YouTube Data API, configure the OAuth consent screen and client, then authorize the account used for uploads. The API's `videos.insert` upload flow can set metadata. New/unverified API projects may have uploaded videos restricted to private visibility until the required audit/verification conditions are met. citeturn0search5
 
-## Firestore data shape
+### TikTok
+Create a TikTok developer app, add Content Posting API, configure authorization and obtain the required publishing authorization. Direct posting uses `video.publish`; video can be transferred as a file or pulled from a verified URL/domain. TikTok returns a `publish_id` for status tracking, and unaudited clients can face private-only restrictions. citeturn0search0turn0search2
 
-```
-users/{userId}
-  name, email, createdAt, sheetConnected
+### Pinterest
+Create a Pinterest developer account/app and follow the API app connection and review requirements before implementing Pin/video publishing. citeturn0search8
 
-users/{userId}/config/sheet
-  sheetUrl, sheetId, tabName, headers[], mapping { videoName, videoLink, status }
+### Meta platforms: Facebook, Instagram, Threads
+Create and configure the user's own Meta developer app, add the relevant product/permissions, configure redirect URLs and authorize the target Page/Instagram/Threads account. Keep scopes and publishing permissions platform-specific.
 
-users/{userId}/connectors/{platform}
-  platform, status, ...credential fields
-```
+### LinkedIn, X, Snapchat, Bluesky, Reddit, Telegram, Discord, Google Business and Mastodon
+Each connector requires the user's own developer/app credentials where applicable and an account with the relevant posting permission. Use the official developer portal for current scopes, approval and API availability.
 
-## Security note before this goes anywhere beyond your own machine
+## Security note
+Do not publish client secrets, refresh tokens or long-lived access tokens in public source control. A browser-only app is useful for prototypes and guided configuration, but production OAuth secrets/token exchange should be handled by a secure trusted environment.
 
-`firestore.rules` in this project is wide open (`allow read, write: if true`) so Phase 1 works
-without setting up Firebase Auth first. Before deploying this anywhere reachable by anyone but
-you:
-
-1. Add [Firebase Authentication](https://firebase.google.com/docs/auth) (email/password or
-   Google sign-in).
-2. Tighten `firestore.rules` to check `request.auth.uid` against the document being read/written.
-3. Move long-lived platform tokens (YouTube refresh token, page tokens, etc.) behind a Cloud
-   Function instead of writing them straight from the browser, so they're never exposed to
-   client-side JS.
-
-## Phase 2
-
-Phase 2 — the Cloud Function that actually posts "ready" rows out to YouTube, Instagram,
-Facebook, and TikTok, and writes the result back to the sheet — is documented separately in
-[`PHASE2_README.md`](./PHASE2_README.md), since it needs its own service account and per-platform
-setup.
-
-## Project structure
-
-```
-src/
-  firebaseConfig.js     — your Firebase + Sheets API keys (edit this)
-  firebase.js           — Firebase app/Firestore init
-  lib/firestore.js       — all Firestore reads/writes
-  context/AppContext.jsx — tracks the active user across pages
-  components/            — Sidebar, PipelineHero (dashboard visual), PlatformCard
-  pages/                 — Users, SheetSetup, Connectors, Dashboard
-```
+## Troubleshooting
+- **Data disappeared:** check browser site data; local storage is browser/device-specific.
+- **Google login fails:** verify Firebase config, authorized domains and Google provider.
+- **Sheet headers fail:** verify sheet ID/tab, Sheets API key and sharing/API restrictions.
+- **Connector cannot publish:** verify the platform's current scopes, app approval, account eligibility and OAuth token.

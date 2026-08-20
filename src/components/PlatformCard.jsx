@@ -58,18 +58,27 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
       </div>
 
       <div className="grid gap-3">
-        {platform.fields.map((f) => (
-          <div key={f.key}>
-            <span className="label">{f.label}</span>
-            <input
-              type={f.secret ? "password" : "text"}
-              className="input font-mono text-xs"
-              placeholder={f.placeholder}
-              value={values[f.key]}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-            />
-          </div>
-        ))}
+        {platform.fields.map((f) => {
+          const id = `${platform.id}-${f.key}`;
+          return (
+            <div key={f.key}>
+              <label htmlFor={id} className="label">
+                {f.label}
+              </label>
+              <input
+                id={id}
+                name={f.key}
+                aria-label={f.label}
+                autoComplete="off"
+                type={f.secret ? "password" : "text"}
+                className="input font-mono text-xs"
+                placeholder={f.placeholder}
+                value={values[f.key]}
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex gap-2 pt-1">
@@ -77,8 +86,15 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
           className="btn-primary flex-1 disabled:cursor-not-allowed"
           disabled={!allFilled || saving}
           onClick={handleSave}
+          aria-disabled={!allFilled || saving}
         >
-          {saving ? "Saving…" : isConnected ? "Update keys" : "Save & connect"}
+          {saving ? (
+            <span aria-live="polite">Saving…</span>
+          ) : isConnected ? (
+            "Update keys"
+          ) : (
+            "Save & connect"
+          )}
         </button>
         {isConnected && (
           <button className="btn-ghost" onClick={() => onRemove(platform.id)}>

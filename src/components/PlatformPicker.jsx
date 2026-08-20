@@ -2,7 +2,7 @@ import { PLATFORMS } from "../lib/platforms";
 
 export default function PlatformPicker({ selected, onToggle }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div aria-label="Platform picker" className="grid grid-cols-2 sm:grid-cols-5 gap-3">
       {PLATFORMS.map((p) => {
         const isOn = selected.includes(p.id);
         return (
@@ -11,12 +11,13 @@ export default function PlatformPicker({ selected, onToggle }) {
             type="button"
             onClick={() => onToggle(p.id)}
             aria-pressed={isOn}
-            className={`relative flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 transition-all duration-150 ${
+            className={`relative flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet/40 ${
               isOn
                 ? "border-transparent bg-raised shadow-glow"
                 : "border-border bg-surface/40 hover:border-muted"
             }`}
             style={isOn ? { boxShadow: `0 0 0 1.5px ${p.color}55, 0 8px 24px -8px ${p.color}66` } : undefined}
+            title={p.name}
           >
             {isOn && (
               <span

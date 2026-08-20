@@ -6,14 +6,15 @@ const steps = [
   { n: "01", to: "/", label: "Users", desc: "Add & manage" },
   { n: "02", to: "/sheet", label: "Sheet", desc: "Connect & map" },
   { n: "03", to: "/connectors", label: "Connectors", desc: "Platform keys" },
-  { n: "04", to: "/dashboard", label: "Dashboard", desc: "Overview" },
+  { n: "04", to: "/queue", label: "Queue", desc: "Validate & publish" },
+  { n: "05", to: "/dashboard", label: "Dashboard", desc: "Overview" },
 ];
 
 export default function Sidebar() {
   const { users, activeUserId, setActiveUserId, activeUser } = useApp();
 
   return (
-    <aside className="w-64 shrink-0 border-r border-border bg-surface/60 flex flex-col h-full">
+    <aside className="w-64 shrink-0 border-r border-border bg-surface/60 flex flex-col h-full sticky top-0">
       <div className="px-5 py-6 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet to-teal flex items-center justify-center">
@@ -24,7 +25,7 @@ export default function Sidebar() {
         <p className="text-muted text-xs mt-1.5 font-mono">sheet &rarr; queue &rarr; platforms</p>
       </div>
 
-      <nav className="flex-1 px-3 py-5 flex flex-col gap-1">
+      <nav aria-label="Primary" className="flex-1 px-3 py-5 flex flex-col gap-1">
         {steps.map((s) => (
           <NavLink
             key={s.to}
@@ -103,6 +104,7 @@ export default function Sidebar() {
               </div>
             )}
             <select
+              aria-label="Select active user"
               className="input text-sm"
               value={activeUserId || ""}
               onChange={(e) => setActiveUserId(e.target.value)}

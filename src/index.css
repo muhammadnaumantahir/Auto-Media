@@ -14,7 +14,7 @@ body,
 
 body {
   background: radial-gradient(1200px 600px at 85% -10%, rgba(124, 92, 255, 0.12), transparent 60%),
-    radial-gradient(900px 500px at 0% 100%, rgba(45, 212, 191, 0.08), transparent 55%), #0b0f1a;
+    radial-gradient(900px 500px at 0% 100%, rgba(45, 212, 191, 0.08), transparent 55%), linear-gradient(180deg,#0b0f1a 0%, #071021 100%);
 }
 
 ::selection {
@@ -27,21 +27,22 @@ body {
 }
 
 .card {
-  background: #141a2a;
-  border: 1px solid #2a3350;
+  background: linear-gradient(180deg, rgba(20,26,42,0.9), rgba(16,20,32,0.8));
+  border: 1px solid rgba(42,51,80,0.9);
   border-radius: 14px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.18s ease, transform 0.12s ease, box-shadow 0.12s ease;
+  will-change: transform;
 }
 
 .input {
-  background: #0b0f1a;
-  border: 1px solid #2a3350;
+  background: rgba(11,15,26,0.6);
+  border: 1px solid rgba(42,51,80,0.7);
   border-radius: 10px;
   padding: 10px 12px;
   color: #e9ecf5;
   font-size: 14px;
   width: 100%;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.08s ease;
 }
 
 .input:focus {
@@ -55,18 +56,20 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, #8a6bff, #7c5cff);
+  background: linear-gradient(180deg, #9a7bff, #7c5cff 65%);
   color: white;
   font-weight: 600;
   font-size: 14px;
   padding: 10px 16px;
   border-radius: 10px;
-  transition: transform 0.1s ease, box-shadow 0.15s ease;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset;
+  transition: transform 0.12s ease, box-shadow 0.16s ease, filter 0.12s ease;
+  box-shadow: 0 6px 20px -10px rgba(124,92,255,0.55), 0 1px 0 rgba(255,255,255,0.06) inset;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.4), 0 8px 24px -6px rgba(124, 92, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.35), 0 16px 36px -18px rgba(124, 92, 255, 0.45);
+  filter: saturate(1.05) brightness(1.02);
 }
 
 .btn-primary:disabled {
@@ -87,8 +90,8 @@ body {
 }
 
 .btn-ghost:hover {
-  border-color: #7c5cff;
-  background: rgba(124, 92, 255, 0.08);
+  border-color: rgba(124,92,255,0.9);
+  background: rgba(124, 92, 255, 0.06);
 }
 
 .label {
@@ -101,6 +104,11 @@ body {
   display: block;
 }
 
+.focus-ring {
+  box-shadow: 0 0 0 3px rgba(124,92,255,0.12);
+  border-color: rgba(124,92,255,0.6);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;
@@ -108,3 +116,30 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Product polish */
+body { color: #e9ecf5; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.card:hover { border-color: rgba(124,92,255,.35); }
+.card { box-shadow: 0 18px 60px -45px rgba(0,0,0,.75); }
+.input:hover { border-color: rgba(124,92,255,.38); }
+.btn-primary { min-height: 42px; }
+.btn-ghost { min-height: 40px; }
+button { -webkit-tap-highlight-color: transparent; }
+@media (max-width: 768px) {
+  aside.w-64 { width: 72px; }
+  aside.w-64 .font-display.text-lg, aside.w-64 p, aside.w-64 nav span > span:last-child, aside.w-64 .label, aside.w-64 select, aside.w-64 .pl-9 { display:none; }
+  aside.w-64 nav { padding-left: 8px; padding-right: 8px; align-items:center; }
+  aside.w-64 nav a { width: 52px; justify-content:center; padding-left: 8px; padding-right:8px; }
+  aside.w-64 nav a > span:last-child { display:none; }
+  aside.w-64 > div:first-child { padding-left: 20px; padding-right: 12px; }
+  aside.w-64 > div:last-child { padding-left: 20px; padding-right: 8px; }
+}
+:root{color-scheme:dark} body{background:#080b14;color:#f3f5ff;background-image:radial-gradient(circle at 80% -10%,rgba(124,92,255,.18),transparent 32%),radial-gradient(circle at 10% 80%,rgba(45,212,191,.08),transparent 28%)}
+.topbar{min-height:70px;padding:12px 28px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(8,11,20,.72);backdrop-filter:blur(18px);position:sticky;top:0;z-index:20}.status-pill{font-size:11px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.09);color:#8f98b5;background:rgba(255,255,255,.025)}.status-pill.ok{color:#55e6c1;border-color:rgba(85,230,193,.22);background:rgba(85,230,193,.07)}.btn-google{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:linear-gradient(180deg,#202638,#151a28);font-size:13px;font-weight:600;transition:.2s}.btn-google:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.25)}.user-chip{display:flex;align-items:center;gap:8px;padding:4px 8px 4px 4px;border:1px solid rgba(255,255,255,.08);border-radius:999px;font-size:12px;background:rgba(255,255,255,.03)}.user-chip img{width:28px;height:28px;border-radius:50%}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px}.card{background:linear-gradient(145deg,rgba(28,33,51,.92),rgba(13,17,29,.88));border-color:rgba(255,255,255,.08);border-radius:18px}.card:hover{box-shadow:0 22px 60px -35px rgba(0,0,0,.9);transform:translateY(-1px)}.input{background:rgba(4,7,14,.48);border-color:rgba(255,255,255,.09);padding:12px 13px;border-radius:12px}.btn-primary{border-radius:12px;padding:11px 18px;background:linear-gradient(135deg,#8b72ff,#5b46df)}
+/* Premium theme refresh */
+.app-shell{background:radial-gradient(900px 500px at 85% 0%,rgba(124,92,255,.22),transparent 60%),radial-gradient(700px 500px at 0% 100%,rgba(30,211,180,.10),transparent 65%),#080b14}
+aside{background:linear-gradient(180deg,rgba(15,19,33,.96),rgba(8,11,20,.96))!important;box-shadow:18px 0 55px -42px #000}
+nav a{position:relative}nav a:before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;border-radius:999px;background:transparent}nav a.active:before{background:#8b72ff;box-shadow:0 0 20px #8b72ff}
+.card{position:relative;overflow:hidden}.card:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.035),transparent 30%)}
+.btn-primary{box-shadow:0 12px 28px -14px rgba(91,70,223,.9)}
+main{min-width:0}.page-title{letter-spacing:-.035em;font-weight:800}
