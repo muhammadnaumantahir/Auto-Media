@@ -17,6 +17,7 @@ const HEADERS = [
   'video_sheet_url',
   'column_mapping', // JSON: { videoLink, title, description, status, platforms }
   'platform_tokens', // JSON: { youtube: {access,refresh}, facebook: {...}, ... } (values encrypted)
+  'enabled_platforms', // JSON array, e.g. ["youtube","facebook"]
   'created_at',
 ];
 
@@ -50,6 +51,11 @@ function rowToUser(row) {
     };
   }
 
+  let enabledPlatforms = [];
+  try {
+    enabledPlatforms = row.get('enabled_platforms') ? JSON.parse(row.get('enabled_platforms')) : [];
+  } catch (_) {}
+
   return {
     id: row.get('id'),
     email: row.get('email'),
@@ -61,9 +67,16 @@ function rowToUser(row) {
     videoSheetUrl: row.get('video_sheet_url'),
     columnMapping,
     platformTokens,
+    enabledPlatforms,
     createdAt: row.get('created_at'),
     _row: row, // keep reference for updates
   };
+}
+
+async function listUsers() {
+  const sheet = await getUsersSheet();
+  const rows = await sheet.getRows();
+  return rows.map(rowToUser);
 }
 
 async function findByEmail(email) {
@@ -92,7 +105,7 @@ async function createUser({ email, passwordHash, googleId, firstName, lastName }
   const id = uuidv4();
   await sheet.addRow({
     id,
-    email,
+    email: email || '',
     password_hash: passwordHash || '',
     google_id: googleId || '',
     first_name: firstName || '',
@@ -101,9 +114,18 @@ async function createUser({ email, passwordHash, googleId, firstName, lastName }
     video_sheet_url: '',
     column_mapping: '{}',
     platform_tokens: '{}',
+    enabled_platforms: '[]',
     created_at: new Date().toISOString(),
   });
   return findById(id);
+}
+
+async function deleteUser(id) {
+  const sheet = await getUsersSheet();
+  const rows = await sheet.getRows();
+  const row = rows.find((r) => r.get('id') === id);
+  if (!row) throw new Error('User not found');
+  await row.delete();
 }
 
 /**
@@ -133,9 +155,23 @@ async function updateUser(id, updates) {
     }
     row.set('platform_tokens', JSON.stringify(encrypted));
   }
+  if (updates.enabledPlatforms !== undefined) {
+    row.set('enabled_platforms', JSON.stringify(updates.enabledPlatforms));
+  }
+  if (updates.firstName !== undefined) row.set('first_name', updates.firstName);
+  if (updates.lastName !== undefined) row.set('last_name', updates.lastName);
+  if (updates.email !== undefined) row.set('email', updates.email);
 
   await row.save();
   return findById(id);
 }
 
-module.exports = { findByEmail, findById, findByGoogleId, createUser, updateUser };
+module.exports = {
+  findByEmail,
+  findById,
+  findByGoogleId,
+  createUser,
+  updateUser,
+  listUsers,
+  deleteUser,
+};
