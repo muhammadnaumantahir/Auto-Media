@@ -1,0 +1,14 @@
+{
+  "name": "auto-media",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Root manifest so build platforms (e.g. Railway) detect this as a Node app and delegate to backend/.",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "postinstall": "npm install --prefix backend",
+    "start": "npm start --prefix backend",
+    "build": "echo 'no root build step; backend has no build step'"
+  }
+}
