@@ -6,6 +6,7 @@ import Users from "./pages/Users";
 import SheetSetup from "./pages/SheetSetup";
 import Connectors from "./pages/Connectors";
 import Dashboard from "./pages/Dashboard";
+import Guides from "./pages/Guides";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="/sheet" element={<SheetSetup />} />
                 <Route path="/connectors" element={<Connectors />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/guides" element={<Guides />} />
               </Routes>
             </main>
           </div>

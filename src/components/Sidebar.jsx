@@ -57,6 +57,35 @@ export default function Sidebar() {
             )}
           </NavLink>
         ))}
+
+        <div className="mt-3 pt-3 border-t border-border">
+          <NavLink
+            to="/guides"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                isActive ? "bg-raised border border-border" : "hover:bg-raised/60"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <span
+                  className={`w-7 h-7 rounded-md flex items-center justify-center border text-sm ${
+                    isActive ? "border-violet text-violet bg-violet/10" : "border-border text-muted"
+                  }`}
+                >
+                  ?
+                </span>
+                <span>
+                  <span className={`block text-sm font-medium ${isActive ? "text-ivory" : "text-muted"}`}>
+                    Setup guides
+                  </span>
+                  <span className="block text-[11px] text-muted">Per-platform how-to</span>
+                </span>
+              </>
+            )}
+          </NavLink>
+        </div>
       </nav>
 
       <div className="px-4 py-4 border-t border-border">

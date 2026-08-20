@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function PlatformCard({ platform, saved, onSave, onRemove }) {
   const [values, setValues] = useState(() => {
@@ -37,15 +38,23 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
             <p className="text-[11px] text-muted">{platform.description}</p>
           </div>
         </div>
-        <span
-          className={`text-[10px] font-mono px-2 py-1 rounded-full border ${
-            isConnected
-              ? "border-teal/40 text-teal bg-teal/10"
-              : "border-border text-muted"
-          }`}
-        >
-          {isConnected ? "● connected" : "○ not connected"}
-        </span>
+        <div className="flex flex-col items-end gap-1.5">
+          <span
+            className={`text-[10px] font-mono px-2 py-1 rounded-full border ${
+              isConnected
+                ? "border-teal/40 text-teal bg-teal/10"
+                : "border-border text-muted"
+            }`}
+          >
+            {isConnected ? "● connected" : "○ not connected"}
+          </span>
+          <Link
+            to={`/guides?platform=${platform.id}`}
+            className="text-[10px] text-muted hover:text-violet transition-colors"
+          >
+            Setup guide ↗
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-3">
