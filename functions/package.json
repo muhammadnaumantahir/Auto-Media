@@ -1,0 +1,20 @@
+{
+  "name": "auto-media-functions",
+  "private": true,
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "firebase-admin": "^12.3.1",
+    "firebase-functions": "^5.0.1",
+    "google-auth-library": "^9.11.0",
+    "googleapis": "^140.0.1"
+  }
+}

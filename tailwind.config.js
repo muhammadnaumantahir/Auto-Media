@@ -32,10 +32,20 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.45" },
         },
+        fadeUp: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        popIn: {
+          "0%": { opacity: "0", transform: "scale(0.94)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         dash: "dash 1.2s linear infinite",
         pulseSoft: "pulseSoft 2s ease-in-out infinite",
+        "fade-up": "fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "pop-in": "popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both",
       },
     },
   },

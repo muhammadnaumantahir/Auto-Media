@@ -20,6 +20,8 @@ export default function SheetSetup() {
   const [tabName, setTabName] = useState("Sheet1");
   const [headers, setHeaders] = useState([]);
   const [mapping, setMapping] = useState({ videoName: "", videoLink: "", status: "" });
+  const [readyValue, setReadyValue] = useState("ready");
+  const [postedValue, setPostedValue] = useState("posted");
   const [fetching, setFetching] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -34,6 +36,8 @@ export default function SheetSetup() {
         setTabName(cfg.tabName || "Sheet1");
         setHeaders(cfg.headers || []);
         setMapping(cfg.mapping || { videoName: "", videoLink: "", status: "" });
+        setReadyValue(cfg.readyValue || "ready");
+        setPostedValue(cfg.postedValue || "posted");
       }
     });
     return unsub;
@@ -79,6 +83,8 @@ export default function SheetSetup() {
         tabName,
         headers,
         mapping,
+        readyValue,
+        postedValue,
       });
     } catch (err) {
       setError(err.message);
@@ -95,12 +101,12 @@ export default function SheetSetup() {
 
   return (
     <div className="max-w-3xl">
-      <header className="mb-8">
+      <header className="mb-8 animate-fade-up">
         <p className="label">Step 02 · {activeUser.name}</p>
         <h1 className="font-display text-2xl font-semibold">Connect the Google Sheet</h1>
         <p className="text-muted text-sm mt-1">
-          Point Relay at the sheet that lists videos to post, then match its columns to what
-          Relay expects: video name, video link, and status.
+          Point Auto-Media at the sheet that lists videos to post, then match its columns to what
+          Auto-Media expects: video name, video link, and status.
         </p>
       </header>
 
@@ -148,6 +154,27 @@ export default function SheetSetup() {
               </select>
             </div>
           ))}
+        </div>
+      )}
+
+      {headers.length > 0 && (
+        <div className="card p-6 grid gap-4 mb-6">
+          <p className="label">Posting triggers</p>
+          <p className="text-xs text-muted -mt-2">
+            The posting job looks for rows where the status column equals "ready", posts them,
+            then writes "posted" back — or an error message if something failed. Change either
+            word if your sheet uses different ones.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <span className="label">"Ready to post" value</span>
+              <input className="input font-mono text-sm" value={readyValue} onChange={(e) => setReadyValue(e.target.value)} />
+            </div>
+            <div>
+              <span className="label">"Posted" value</span>
+              <input className="input font-mono text-sm" value={postedValue} onChange={(e) => setPostedValue(e.target.value)} />
+            </div>
+          </div>
         </div>
       )}
 

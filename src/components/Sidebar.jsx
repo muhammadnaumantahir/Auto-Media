@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import { initials, avatarColor } from "../lib/avatar";
 
 const steps = [
   { n: "01", to: "/", label: "Users", desc: "Add & manage" },
@@ -16,9 +17,9 @@ export default function Sidebar() {
       <div className="px-5 py-6 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet to-teal flex items-center justify-center">
-            <span className="font-display font-bold text-ink text-sm">R</span>
+            <span className="font-display font-bold text-ink text-sm">A</span>
           </div>
-          <span className="font-display font-semibold text-lg tracking-tight">Relay</span>
+          <span className="font-display font-semibold text-lg tracking-tight">Auto-Media</span>
         </div>
         <p className="text-muted text-xs mt-1.5 font-mono">sheet &rarr; queue &rarr; platforms</p>
       </div>
@@ -63,20 +64,30 @@ export default function Sidebar() {
         {users.length === 0 ? (
           <p className="text-xs text-muted">No users yet</p>
         ) : (
-          <select
-            className="input text-sm"
-            value={activeUserId || ""}
-            onChange={(e) => setActiveUserId(e.target.value)}
-          >
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            {activeUser && (
+              <div
+                className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center font-display font-semibold text-[10px]"
+                style={{ background: avatarColor(activeUser.name).bg, color: avatarColor(activeUser.name).fg }}
+              >
+                {initials(activeUser.name)}
+              </div>
+            )}
+            <select
+              className="input text-sm"
+              value={activeUserId || ""}
+              onChange={(e) => setActiveUserId(e.target.value)}
+            >
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
         {activeUser && (
-          <p className="text-[11px] text-muted mt-2 truncate">{activeUser.email}</p>
+          <p className="text-[11px] text-muted mt-2 truncate pl-9">{activeUser.email}</p>
         )}
       </div>
     </aside>

@@ -1,69 +1,9 @@
 import { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
-import { saveConnector, removeConnector, watchConnectors } from "../lib/firestore";
+import { saveConnector, removeConnector, watchConnectors, setEnabledPlatforms } from "../lib/firestore";
+import { PLATFORMS } from "../lib/platforms";
 import PlatformCard from "../components/PlatformCard";
-
-const PLATFORMS = [
-  {
-    id: "youtube",
-    name: "YouTube",
-    short: "YT",
-    color: "#FF3B30",
-    description: "Upload as a channel video",
-    fields: [
-      { key: "clientId", label: "OAuth client ID", placeholder: "xxxx.apps.googleusercontent.com" },
-      { key: "clientSecret", label: "OAuth client secret", placeholder: "GOCSPX-…", secret: true },
-      { key: "refreshToken", label: "Refresh token", placeholder: "1//0g…", secret: true },
-      { key: "channelId", label: "Channel ID", placeholder: "UCxxxxxxxx" },
-    ],
-  },
-  {
-    id: "instagram",
-    name: "Instagram",
-    short: "IG",
-    color: "#E1306C",
-    description: "Publish as a Reel",
-    fields: [
-      { key: "accessToken", label: "Graph API access token", placeholder: "EAAG…", secret: true },
-      { key: "igUserId", label: "Instagram business user ID", placeholder: "17841…" },
-    ],
-  },
-  {
-    id: "facebook",
-    name: "Facebook",
-    short: "FB",
-    color: "#3B82F6",
-    description: "Post to a Page",
-    fields: [
-      { key: "pageAccessToken", label: "Page access token", placeholder: "EAAG…", secret: true },
-      { key: "pageId", label: "Page ID", placeholder: "1234567890" },
-    ],
-  },
-  {
-    id: "tiktok",
-    name: "TikTok",
-    short: "TT",
-    color: "#E9ECF5",
-    description: "Publish via Content Posting API",
-    fields: [
-      { key: "clientKey", label: "Client key", placeholder: "aw…" },
-      { key: "clientSecret", label: "Client secret", placeholder: "…", secret: true },
-      { key: "accessToken", label: "Access token", placeholder: "act.…", secret: true },
-    ],
-  },
-  {
-    id: "snapchat",
-    name: "Snapchat",
-    short: "SC",
-    color: "#F5A623",
-    description: "Publish via Marketing/Creative API",
-    fields: [
-      { key: "clientId", label: "Client ID", placeholder: "…" },
-      { key: "clientSecret", label: "Client secret", placeholder: "…", secret: true },
-      { key: "accessToken", label: "Access token", placeholder: "…", secret: true },
-    ],
-  },
-];
+import PlatformPicker from "../components/PlatformPicker";
 
 export default function Connectors() {
   const { activeUser } = useApp();
@@ -80,29 +20,51 @@ export default function Connectors() {
   }
 
   const savedMap = Object.fromEntries(saved.map((s) => [s.id, s]));
+  const selected = activeUser.enabledPlatforms || [];
+
+  function handleToggle(platformId) {
+    const next = selected.includes(platformId)
+      ? selected.filter((id) => id !== platformId)
+      : [...selected, platformId];
+    setEnabledPlatforms(activeUser.id, next);
+  }
+
+  const selectedPlatforms = PLATFORMS.filter((p) => selected.includes(p.id));
 
   return (
     <div className="max-w-5xl">
-      <header className="mb-8">
+      <header className="mb-8 animate-fade-up">
         <p className="label">Step 03 · {activeUser.name}</p>
-        <h1 className="font-display text-2xl font-semibold">Add platform connectors</h1>
+        <h1 className="font-display text-2xl font-semibold">Choose platforms &amp; add keys</h1>
         <p className="text-muted text-sm mt-1">
-          Paste each platform's API credentials. Keys are written straight to this user's
-          document in Firestore, scoped to their account only.
+          Tap the platforms {activeUser.name.split(" ")[0]} actually posts to — only those show a
+          form below, and only those get used when the posting job runs.
         </p>
       </header>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        {PLATFORMS.map((p) => (
-          <PlatformCard
-            key={p.id}
-            platform={p}
-            saved={savedMap[p.id]}
-            onSave={(id, values) => saveConnector(activeUser.id, id, values)}
-            onRemove={(id) => removeConnector(activeUser.id, id)}
-          />
-        ))}
+      <div className="card p-6 mb-8 animate-fade-up" style={{ animationDelay: "40ms" }}>
+        <PlatformPicker selected={selected} onToggle={handleToggle} />
       </div>
+
+      {selectedPlatforms.length === 0 ? (
+        <div className="card p-10 text-center animate-fade-up" style={{ animationDelay: "80ms" }}>
+          <p className="text-sm text-ivory font-medium mb-1">No platforms selected yet</p>
+          <p className="text-xs text-muted">Pick at least one above to configure its account keys.</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          {selectedPlatforms.map((p, i) => (
+            <div key={p.id} className="animate-fade-up" style={{ animationDelay: `${80 + i * 40}ms` }}>
+              <PlatformCard
+                platform={p}
+                saved={savedMap[p.id]}
+                onSave={(id, values) => saveConnector(activeUser.id, id, values)}
+                onRemove={(id) => removeConnector(activeUser.id, id)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

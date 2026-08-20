@@ -29,7 +29,12 @@ export async function createUser({ name, email }) {
     createdAt: serverTimestamp(),
     sheetConnected: false,
     connectorsCount: 0,
+    enabledPlatforms: [],
   });
+}
+
+export async function setEnabledPlatforms(userId, platforms) {
+  return setDoc(doc(db, "users", userId), { enabledPlatforms: platforms }, { merge: true });
 }
 
 export async function deleteUser(userId) {

@@ -1,4 +1,4 @@
-# Relay — Sheet to Social (Phase 1)
+# Auto-Media — Sheet to Social (Phase 1)
 
 A web app that connects a user's Google Sheet (video name / link / status columns) to a set
 of social platform connectors, so a future posting job can read "ready" rows and publish them
@@ -123,6 +123,13 @@ you:
 3. Move long-lived platform tokens (YouTube refresh token, page tokens, etc.) behind a Cloud
    Function instead of writing them straight from the browser, so they're never exposed to
    client-side JS.
+
+## Phase 2
+
+Phase 2 — the Cloud Function that actually posts "ready" rows out to YouTube, Instagram,
+Facebook, and TikTok, and writes the result back to the sheet — is documented separately in
+[`PHASE2_README.md`](./PHASE2_README.md), since it needs its own service account and per-platform
+setup.
 
 ## Project structure
 

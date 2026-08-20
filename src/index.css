@@ -30,6 +30,7 @@ body {
   background: #141a2a;
   border: 1px solid #2a3350;
   border-radius: 14px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .input {

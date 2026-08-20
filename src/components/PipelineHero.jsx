@@ -25,7 +25,7 @@ export default function PipelineHero() {
         <g>
           <rect x="300" y="52" width="120" height="56" rx="10" fill="#0B0F1A" stroke="#7C5CFF" />
           <text x="360" y="76" textAnchor="middle" className="fill-ivory" style={{ font: "600 12px 'Space Grotesk'" }}>
-            Relay queue
+            Auto-Media queue
           </text>
           <text x="360" y="94" textAnchor="middle" className="fill-violet" style={{ font: "500 10px 'JetBrains Mono'" }}>
             fan-out ×5

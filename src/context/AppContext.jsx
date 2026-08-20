@@ -7,7 +7,7 @@ export function AppProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [activeUserId, setActiveUserId] = useState(
-    () => localStorage.getItem("relay:activeUserId") || null
+    () => localStorage.getItem("automedia:activeUserId") || null
   );
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     if (activeUserId) {
-      localStorage.setItem("relay:activeUserId", activeUserId);
+      localStorage.setItem("automedia:activeUserId", activeUserId);
     }
   }, [activeUserId]);
 
