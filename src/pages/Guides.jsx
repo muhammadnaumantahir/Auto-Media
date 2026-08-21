@@ -30,7 +30,8 @@ export default function Guides() {
   };
 
   function fieldLabel(key) {
-    return (platform?.fields || []).find((f) => f.key === key)?.label || key;
+    const all = [...(platform?.fields || []), ...(platform?.appFields || [])];
+    return all.find((f) => f.key === key)?.label || key;
   }
 
   function selectPlatform(id) {

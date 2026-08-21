@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { httpsCallable } from "firebase/functions";
 import { useApp } from "../context/AppContext";
 import { watchSheetConfig, watchConnectors } from "../lib/firestore";
-import { functions } from "../firebase";
+import { runPostingForUser } from "../lib/runPosting";
 import PipelineHero from "../components/PipelineHero";
 
 export default function Dashboard() {
@@ -28,11 +27,10 @@ export default function Dashboard() {
     setRunError("");
     setRunResult(null);
     try {
-      const runPostingNow = httpsCallable(functions, "runPostingNow");
-      const res = await runPostingNow({ userId: activeUser.id });
-      setRunResult(res.data);
+      const res = await runPostingForUser({ sheet, connectors });
+      setRunResult(res);
     } catch (err) {
-      setRunError(err.message || "The posting job failed to run.");
+      setRunError(err.message || "The posting run failed.");
     } finally {
       setRunning(false);
     }
@@ -53,7 +51,7 @@ export default function Dashboard() {
           </p>
         </div>
         <button className="btn-ghost whitespace-nowrap" onClick={handleRunNow} disabled={running}>
-          {running ? "Running…" : "Run posting job now"}
+          {running ? "Posting…" : "Post ready rows now"}
         </button>
       </header>
 
@@ -63,12 +61,25 @@ export default function Dashboard() {
       {runResult && (
         <div className="card p-4 mb-6 text-xs">
           <p className="label mb-2">Last run</p>
-          {runResult.skipped ? (
-            <p className="text-muted">Skipped: {runResult.skipped}</p>
+          {runResult.processed === 0 ? (
+            <p className="text-muted">No rows with status "ready" were found.</p>
           ) : (
-            <p className="text-muted">
-              Processed {runResult.processed} ready row{runResult.processed === 1 ? "" : "s"}.
-            </p>
+            <div className="grid gap-2">
+              {runResult.results.map((r, i) => (
+                <div key={i} className="flex items-center justify-between gap-3">
+                  <span className="text-ivory truncate">
+                    {r.title || `Row ${r.sheetRow}`} <span className="text-muted">· {r.platform}</span>
+                  </span>
+                  {r.ok ? (
+                    <a href={r.url} target="_blank" rel="noreferrer" className="text-teal font-mono shrink-0">
+                      posted ↗
+                    </a>
+                  ) : (
+                    <span className="text-rose font-mono shrink-0">{r.error}</span>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -129,10 +140,12 @@ export default function Dashboard() {
 
       <div className="card p-5 mt-4 border-dashed">
         <p className="text-xs text-muted">
-          <span className="text-ivory font-medium">How posting works:</span> every 15 minutes
-          (or on demand above), the posting job reads rows where status = "ready" from this
-          user's sheet, publishes to each selected & connected platform, then writes "posted"
-          (or the error) back.
+          <span className="text-ivory font-medium">How posting works:</span> click "Post ready
+          rows now" to read every row where the status column reads exactly "ready", upload each
+          to the platforms listed in its platforms column, and show the result here. Only YouTube
+          actually posts right now — other platforms will show "not built yet" until added. This
+          doesn't run automatically or write the result back into your sheet yet — update each
+          row's status by hand for now.
         </p>
       </div>
     </div>

@@ -2,37 +2,37 @@ export const GUIDES = {
   youtube: {
     breadcrumb: ["Google Cloud Console", "APIs & Services", "Credentials", "OAuth Playground"],
     intro:
-      "YouTube needs a Google Cloud OAuth client plus a one-time refresh token for the channel that will post.",
+      "Steps 1–4 are one-time setup, shared by every user (paste those into the \"YouTube app credentials\" card at the top of Connectors). Steps 5–6 are per user — each channel gets its own refresh token and goes in that user's own YouTube card below.",
     steps: [
       {
         title: "Create or select a Google Cloud project",
-        body: "Use one project for the whole setup — it's what the OAuth client and the enabled API both live under.",
+        body: "Use one project for the whole setup — it's what the OAuth client and the enabled API both live under. One-time, shared by all users.",
         links: [{ label: "Open Cloud Console", url: "https://console.cloud.google.com/projectcreate" }],
       },
       {
         title: "Enable the YouTube Data API v3",
-        body: "APIs & Services → Library → search “YouTube Data API v3” → Enable.",
+        body: "APIs & Services → Library → search “YouTube Data API v3” → Enable. One-time, shared by all users.",
         links: [{ label: "Open API Library", url: "https://console.cloud.google.com/apis/library/youtube.googleapis.com" }],
       },
       {
         title: "Configure the OAuth consent screen",
-        body: "APIs & Services → OAuth consent screen → choose External → fill in app name and support email → add the scope .../auth/youtube.upload. If the app stays in “Testing” mode, add the channel owner's Google account under Test users.",
+        body: "APIs & Services → OAuth consent screen → choose External → fill in app name and support email → add the scope .../auth/youtube.upload. If the app stays in “Testing” mode, add each channel owner's Google account under Test users — do this for every channel/user you plan to add.",
         links: [{ label: "Open consent screen setup", url: "https://console.cloud.google.com/apis/credentials/consent" }],
       },
       {
         title: "Create an OAuth client ID",
-        body: "APIs & Services → Credentials → Create Credentials → OAuth client ID → Application type “Desktop app”. Copy the two values it shows you.",
+        body: "APIs & Services → Credentials → Create Credentials → OAuth client ID → Application type “Desktop app”. Copy the two values it shows you into the shared YouTube app credentials card — one-time, not per user.",
         fields: ["clientId", "clientSecret"],
         links: [{ label: "Open Credentials", url: "https://console.cloud.google.com/apis/credentials" }],
       },
       {
-        title: "Generate a refresh token",
-        body: "Open OAuth Playground → gear icon (top right) → check “Use your own OAuth credentials” → paste your Client ID and secret → in Step 1, find YouTube Data API v3 and select scope .../auth/youtube.upload → Authorize, signing in as the channel owner → in Step 2, click “Exchange authorization code for tokens” → copy the Refresh token shown.",
+        title: "Generate a refresh token for this channel",
+        body: "Open OAuth Playground → gear icon (top right) → check “Use your own OAuth credentials” → paste the shared Client ID and secret → in Step 1, find YouTube Data API v3 and select scope .../auth/youtube.upload → Authorize, signing in as this specific channel's owner → in Step 2, click “Exchange authorization code for tokens” → copy the Refresh token shown. Repeat this step once per user/channel you add.",
         fields: ["refreshToken"],
         links: [{ label: "Open OAuth Playground", url: "https://developers.google.com/oauthplayground" }],
       },
       {
-        title: "Find the channel ID",
+        title: "Find this channel's ID",
         body: "YouTube Studio → Settings → Channel → Advanced settings shows it, or open the channel page and copy the ID from the URL after /channel/.",
         fields: ["channelId"],
         links: [{ label: "Open YouTube Studio", url: "https://studio.youtube.com" }],

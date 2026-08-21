@@ -4,6 +4,7 @@ import { saveConnector, removeConnector, watchConnectors, setEnabledPlatforms } 
 import { PLATFORMS } from "../lib/platforms";
 import PlatformCard from "../components/PlatformCard";
 import PlatformPicker from "../components/PlatformPicker";
+import AppCredentialsCard from "../components/AppCredentialsCard";
 
 export default function Connectors() {
   const { activeUser } = useApp();
@@ -55,6 +56,7 @@ export default function Connectors() {
         <div className="grid md:grid-cols-2 gap-4">
           {selectedPlatforms.map((p, i) => (
             <div key={p.id} className="animate-fade-up" style={{ animationDelay: `${80 + i * 40}ms` }}>
+              {p.appFields && <AppCredentialsCard platform={p} />}
               <PlatformCard
                 platform={p}
                 saved={savedMap[p.id]}
