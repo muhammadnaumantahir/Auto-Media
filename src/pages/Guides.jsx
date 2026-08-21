@@ -16,10 +16,21 @@ export default function Guides() {
   }, [searchParams]);
 
   const platform = PLATFORMS.find((p) => p.id === activeId) || PLATFORMS[0];
-  const guide = GUIDES[platform.id];
+  // Not every platform has a dedicated guide yet. Always provide a safe fallback
+  // so a new platform can never crash this page.
+  const guide = GUIDES[platform?.id] || {
+    breadcrumb: ["Developer portal", "Create an app", "Configure API access", "Copy credentials"],
+    intro: `A dedicated ${platform?.name || "platform"} guide is not available yet. Use the platform's developer portal to create an app, enable the required publishing permissions, and copy the credentials into Auto-Media.`,
+    steps: [
+      { title: "Open the developer portal", body: `Go to the official ${platform?.name || "platform"} developer or business portal and sign in.` },
+      { title: "Create or configure an application", body: "Enable the API/product needed for publishing and complete any required verification." },
+      { title: "Create credentials", body: "Generate the client/app credentials and an access token with the required publishing scopes.", fields: (platform?.fields || []).map((field) => field.key) },
+      { title: "Save the connector", body: "Paste the values into the matching fields on the Connectors page and save." },
+    ],
+  };
 
   function fieldLabel(key) {
-    return platform.fields.find((f) => f.key === key)?.label || key;
+    return (platform?.fields || []).find((f) => f.key === key)?.label || key;
   }
 
   function selectPlatform(id) {

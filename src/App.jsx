@@ -8,10 +8,11 @@ import Connectors from "./pages/Connectors";
 import Dashboard from "./pages/Dashboard";
 import Guides from "./pages/Guides";
 import Queue from "./pages/Queue";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
-    <AppProvider>
+    <ErrorBoundary><AppProvider>
       <HashRouter>
         <div className="app-shell flex h-screen overflow-hidden">
           <Sidebar />
@@ -30,6 +31,6 @@ export default function App() {
           </div>
         </div>
       </HashRouter>
-    </AppProvider>
+    </AppProvider></ErrorBoundary>
   );
 }

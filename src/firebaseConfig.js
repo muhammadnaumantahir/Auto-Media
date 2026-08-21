@@ -8,16 +8,16 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyASFAUjjZc8VRhG2IQxtlkP8ODbdJ8vgJM",
-  authDomain: "auto-media-a65e2.firebaseapp.com",
-  projectId: "auto-media-a65e2",
-  storageBucket: "auto-media-a65e2.firebasestorage.app",
-  messagingSenderId: "304890643952",
-  appId: "1:304890643952:web:9e1286809dd324cd858935",
+  apiKey: "AIzaSyCikvnyCsIgs01fs_RxWHf1uuwglihaCiU",
+  authDomain: "auto-media-8d23e.firebaseapp.com",
+  projectId: "auto-media-8d23e",
+  storageBucket: "auto-media-8d23e.firebasestorage.app",
+  messagingSenderId: "976426695371",
+  appId: "1:976426695371:web:1345035c77ba8b85fc394e",
 };
 
 // Optional: a Google Cloud API key with the "Google Sheets API" enabled.
 // Used only to read the header row of a public/shared sheet for column
 // mapping in Phase 1. Keep this restricted (HTTP referrer + API scope)
 // in Google Cloud Console → Credentials.
-export const googleSheetsApiKey = "YOUR_GOOGLE_SHEETS_API_KEY";
+export const googleSheetsApiKey = "AIzaSyCikvnyCsIgs01fs_RxWHf1uuwglihaCiU";

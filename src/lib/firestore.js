@@ -3,10 +3,14 @@ import { db } from '../firebase';
 
 const KEY='automedia_data_v1';
 const event='automedia:data-changed';
+const BACKUP_VERSION=1;
 const now=()=>new Date().toISOString();
 function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{"users":[]}');return {users:Array.isArray(x.users)?x.users:[]}}catch{return {users:[]}}}
+function validateBackup(payload){if(!payload||typeof payload!=='object'||!Array.isArray(payload.users))throw new Error('Invalid Auto-Media backup file.');return {users:payload.users};}
 function write(data){localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new Event(event));}
 export async function getUsers(){return read().users}
+export function exportBackup(){return {app:'auto-media',version:BACKUP_VERSION,exportedAt:now(),...read()}}
+export function importBackup(payload,{mode='replace'}={}){const incoming=validateBackup(payload);if(mode==='merge'){const current=read();const byEmail=new Map(current.users.map(u=>[u.email,u]));for(const user of incoming.users){if(!user||typeof user!=='object')continue;const id=user.id||crypto.randomUUID();const normalized=user.email?String(user.email).trim().toLowerCase():'';const key=normalized||id;byEmail.set(key,{...byEmail.get(key),...user,id,email:normalized||user.email});}write({users:[...byEmail.values()]});}else write(incoming);return read().users}
 export function watchUsers(callback){const emit=()=>callback(read().users,null);emit();window.addEventListener(event,emit);window.addEventListener('storage',emit);return()=>{window.removeEventListener(event,emit);window.removeEventListener('storage',emit)}}
 export async function createUser({name,email}){const data=read(), normalized=email.trim().toLowerCase();const found=data.users.find(u=>u.email===normalized);if(found)return {...found,exists:true};const user={id:crypto.randomUUID(),name:name.trim(),email:normalized,createdAt:now(),sheet:{},sheetConnected:false,enabledPlatforms:[],connectors:{},connectorsCount:0,settings:{}};data.users.unshift(user);write(data);return user}
 export async function updateUser(id,patch){const data=read();const i=data.users.findIndex(u=>u.id===id);if(i<0)throw new Error('User not found');data.users[i]={...data.users[i],...patch,updatedAt:now()};write(data);return data.users[i]}

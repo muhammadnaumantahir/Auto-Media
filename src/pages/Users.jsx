@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { createUser, deleteUser } from "../lib/firestore";
 import { initials, avatarColor } from "../lib/avatar";
+import BackupData from "../components/BackupData";
 
 export default function Users() {
   const { users, loadingUsers, activeUserId, setActiveUserId } = useApp();
@@ -141,6 +142,7 @@ export default function Users() {
           })}
         </div>
       )}
+      <BackupData />
     </div>
   );
 }

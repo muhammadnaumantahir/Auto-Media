@@ -1,4 +1,4 @@
-export default function BreadcrumbPath({ steps, color }) {
+export default function BreadcrumbPath({ steps = [], color = "#8b5cf6" }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {steps.map((s, i) => (
