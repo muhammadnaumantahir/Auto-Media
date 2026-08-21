@@ -52,3 +52,14 @@ Do not publish client secrets, refresh tokens or long-lived access tokens in pub
 - **Google login fails:** verify Firebase config, authorized domains and Google provider.
 - **Sheet headers fail:** verify sheet ID/tab, Sheets API key and sharing/API restrictions.
 - **Connector cannot publish:** verify the platform's current scopes, app approval, account eligibility and OAuth token.
+
+## Portable video downloading / YouTube Shorts
+The browser must not fetch a YouTube page directly. YouTube does not expose the CORS headers required by a browser app, so the app now uses a portable video-source adapter:
+
+- **Direct video / Google Drive:** still fetched from the browser as before.
+- **YouTube:** sent to `/api/video` by default.
+- **Local development:** run `npm run video-proxy` with `yt-dlp` installed, then set `VITE_VIDEO_PROXY_URL=http://localhost:8787/api/video` in `.env.local`.
+- **Cloudflare Pages:** `functions/api/video.js` is deployed automatically. Set `VIDEO_RESOLVER_URL` (and optionally `VIDEO_RESOLVER_TOKEN`) in Cloudflare Pages environment variables. Cloudflare Workers cannot run a native `yt-dlp` process, so the Pages Function delegates YouTube extraction to your configured resolver service.
+- **Other hosts:** set `VITE_VIDEO_PROXY_URL` to any compatible HTTPS endpoint. The React app does not contain a localhost-only URL.
+
+The resolver contract is simple: `POST` JSON `{ "url": "<youtube-url>" }` and return either `{ "url": "<direct-video-url>" }` or the video bytes with a video content type.

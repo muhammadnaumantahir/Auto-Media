@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "video-proxy": "node server/videoProxy.mjs"
   },
   "dependencies": {
     "firebase": "^12.18.0",
