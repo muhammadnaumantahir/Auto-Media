@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 
 export default function PlatformCard({ platform, saved, onSave, onRemove }) {
   const [values, setValues] = useState(() => {
@@ -10,6 +11,20 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
     return initial;
   });
   const [saving, setSaving] = useState(false);
+  const toast = useToast();
+
+  // `saved` often arrives a tick after this component first mounts (it's
+  // read via an async watcher), so the useState initializer above can run
+  // before real data exists. Re-sync whenever a fresh `saved` value shows
+  // up so the fields don't stay stuck blank until the card happens to
+  // remount.
+  useEffect(() => {
+    const next = {};
+    platform.fields.forEach((f) => {
+      next[f.key] = saved?.[f.key] || "";
+    });
+    setValues(next);
+  }, [saved, platform.fields]);
 
   const isConnected = !!saved;
   const allFilled = platform.fields.every((f) => values[f.key]?.trim());
@@ -18,8 +33,20 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
     setSaving(true);
     try {
       await onSave(platform.id, values);
+      toast.success(`${platform.name} connected.`);
+    } catch (err) {
+      toast.error(err.message || `Could not save ${platform.name}.`);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleRemove() {
+    try {
+      await onRemove(platform.id);
+      toast.success(`${platform.name} disconnected.`);
+    } catch (err) {
+      toast.error(err.message || `Could not disconnect ${platform.name}.`);
     }
   }
 
@@ -97,7 +124,7 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
           )}
         </button>
         {isConnected && (
-          <button className="btn-ghost" onClick={() => onRemove(platform.id)}>
+          <button className="btn-ghost" onClick={handleRemove}>
             Disconnect
           </button>
         )}

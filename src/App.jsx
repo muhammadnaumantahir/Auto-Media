@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
+import { ToastProvider } from "./context/ToastContext";
 import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import Users from "./pages/Users";
@@ -12,7 +13,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
-    <ErrorBoundary><AppProvider>
+    <ErrorBoundary><ToastProvider><AppProvider>
       <HashRouter>
         <div className="app-shell flex h-screen overflow-hidden">
           <Sidebar />
@@ -31,6 +32,6 @@ export default function App() {
           </div>
         </div>
       </HashRouter>
-    </AppProvider></ErrorBoundary>
+    </AppProvider></ToastProvider></ErrorBoundary>
   );
 }

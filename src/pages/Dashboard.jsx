@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { watchSheetConfig, watchConnectors } from "../lib/firestore";
 import { runPostingForUser } from "../lib/runPosting";
+import { useToast } from "../context/ToastContext";
 import PipelineHero from "../components/PipelineHero";
 
 export default function Dashboard() {
   const { activeUser } = useApp();
+  const toast = useToast();
   const [sheet, setSheet] = useState(null);
   const [connectors, setConnectors] = useState([]);
   const [running, setRunning] = useState(false);
@@ -29,8 +31,18 @@ export default function Dashboard() {
     try {
       const res = await runPostingForUser({ sheet, connectors });
       setRunResult(res);
+      if (res.processed === 0) {
+        toast.info('No rows with status "ready" were found.');
+      } else {
+        const ok = res.results.filter((r) => r.ok).length;
+        const failed = res.results.length - ok;
+        if (failed === 0) toast.success(`Posted ${ok}/${res.results.length} successfully.`);
+        else toast.error(`Posted ${ok}/${res.results.length} — ${failed} failed. See details below.`);
+      }
     } catch (err) {
-      setRunError(err.message || "The posting run failed.");
+      const message = err.message || "The posting run failed.";
+      setRunError(message);
+      toast.error(message);
     } finally {
       setRunning(false);
     }
@@ -98,16 +110,20 @@ export default function Dashboard() {
                 <span className="font-mono text-xs">{sheet.tabName}</span>
               </p>
               <p>
-                <span className="text-muted">Video name:</span>{" "}
-                <span className="font-mono text-xs text-teal">{sheet.mapping?.videoName}</span>
+                <span className="text-muted">Video column:</span>{" "}
+                <span className="font-mono text-xs text-teal">{sheet.mapping?.video || "—"}</span>
               </p>
               <p>
-                <span className="text-muted">Video link:</span>{" "}
-                <span className="font-mono text-xs text-teal">{sheet.mapping?.videoLink}</span>
+                <span className="text-muted">Title column:</span>{" "}
+                <span className="font-mono text-xs text-teal">{sheet.mapping?.title || "—"}</span>
               </p>
               <p>
-                <span className="text-muted">Status:</span>{" "}
-                <span className="font-mono text-xs text-teal">{sheet.mapping?.status}</span>
+                <span className="text-muted">Platforms column:</span>{" "}
+                <span className="font-mono text-xs text-teal">{sheet.mapping?.platforms || "—"}</span>
+              </p>
+              <p>
+                <span className="text-muted">Status column:</span>{" "}
+                <span className="font-mono text-xs text-teal">{sheet.mapping?.status || "—"}</span>
               </p>
             </div>
           ) : (

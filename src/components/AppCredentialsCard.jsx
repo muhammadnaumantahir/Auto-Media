@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getPlatformApp, savePlatformApp, watchPlatformApp } from '../lib/platformApps';
+import { useToast } from '../context/ToastContext';
 
 export default function AppCredentialsCard({ platform }) {
   const [values, setValues] = useState(() => {
@@ -11,6 +12,7 @@ export default function AppCredentialsCard({ platform }) {
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(!!getPlatformApp(platform.id));
+  const toast = useToast();
 
   useEffect(() => watchPlatformApp(platform.id, (app) => setSaved(!!app)), [platform.id]);
 
@@ -18,6 +20,9 @@ export default function AppCredentialsCard({ platform }) {
     setSaving(true);
     try {
       await savePlatformApp(platform.id, values);
+      toast.success(`${platform.name} app credentials saved.`);
+    } catch (err) {
+      toast.error(err.message || 'Could not save app credentials.');
     } finally {
       setSaving(false);
     }

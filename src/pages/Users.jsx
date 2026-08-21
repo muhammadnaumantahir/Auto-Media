@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { createUser, deleteUser } from "../lib/firestore";
 import { initials, avatarColor } from "../lib/avatar";
+import { useToast } from "../context/ToastContext";
 import BackupData from "../components/BackupData";
 
 export default function Users() {
@@ -10,6 +11,7 @@ export default function Users() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const toast = useToast();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -22,13 +24,28 @@ export default function Users() {
     try {
       const result = await createUser({ name: name.trim(), email: email.trim() });
       setActiveUserId(result.id);
-      if (result.exists) setError("This user already exists — the existing profile is now active.");
+      if (result.exists) {
+        setError("This user already exists — the existing profile is now active.");
+      } else {
+        toast.success(`${result.name} added.`);
+      }
       setName("");
       setEmail("");
     } catch (err) {
       setError(err.message || "Could not save this user. Check your Firebase config.");
+      toast.error(err.message || "Could not save this user.");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDelete(user) {
+    if (!window.confirm(`Remove ${user.name}? This deletes their sheet and connector setup too.`)) return;
+    try {
+      await deleteUser(user.id);
+      toast.success(`${user.name} removed.`);
+    } catch (err) {
+      toast.error(err.message || "Could not remove this user.");
     }
   }
 
@@ -132,7 +149,7 @@ export default function Users() {
                   </button>
                   <button
                     className="text-xs text-rose hover:underline"
-                    onClick={() => deleteUser(u.id)}
+                    onClick={() => handleDelete(u)}
                   >
                     Remove
                   </button>
