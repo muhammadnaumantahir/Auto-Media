@@ -1,16 +1,22 @@
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getAllPlatformApps, replacePlatformApps } from './platformApps';
 
 const KEY='automedia_data_v1';
 const event='automedia:data-changed';
 const BACKUP_VERSION=1;
 const now=()=>new Date().toISOString();
-function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{"users":[]}');return {users:Array.isArray(x.users)?x.users:[]}}catch{return {users:[]}}}
-function validateBackup(payload){if(!payload||typeof payload!=='object'||!Array.isArray(payload.users))throw new Error('Invalid Auto-Media backup file.');return {users:payload.users};}
+function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{"users":[],"meta":{}}');return {users:Array.isArray(x.users)?x.users:[],meta:x.meta&&typeof x.meta==='object'?x.meta:{}}}catch{return {users:[],meta:{}}}}
+function validateBackup(payload){
+  if(!payload||typeof payload!=='object'||payload.app!=='auto-media'||!Array.isArray(payload.users))
+    throw new Error('Invalid Auto-Media backup file.');
+  if(payload.version>2) throw new Error(`Backup version ${payload.version} is newer than this application.`);
+  return {users:payload.users,meta:payload.meta&&typeof payload.meta==='object'?payload.meta:{}};
+}
 function write(data){localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new Event(event));}
 export async function getUsers(){return read().users}
-export function exportBackup(){return {app:'auto-media',version:BACKUP_VERSION,exportedAt:now(),...read()}}
-export function importBackup(payload,{mode='replace'}={}){const incoming=validateBackup(payload);if(mode==='merge'){const current=read();const byEmail=new Map(current.users.map(u=>[u.email,u]));for(const user of incoming.users){if(!user||typeof user!=='object')continue;const id=user.id||crypto.randomUUID();const normalized=user.email?String(user.email).trim().toLowerCase():'';const key=normalized||id;byEmail.set(key,{...byEmail.get(key),...user,id,email:normalized||user.email});}write({users:[...byEmail.values()]});}else write(incoming);return read().users}
+export function exportBackup(extra={}){return {app:'auto-media',version:2,exportedAt:now(),...read(),platformApps:getAllPlatformApps(),...extra}}
+export function importBackup(payload,{mode='replace'}={}){const incoming=validateBackup(payload);replacePlatformApps(payload.platformApps||{});if(mode==='merge'){const current=read();const byEmail=new Map(current.users.map(u=>[u.email,u]));for(const user of incoming.users){if(!user||typeof user!=='object')continue;const id=user.id||crypto.randomUUID();const normalized=user.email?String(user.email).trim().toLowerCase():'';const key=normalized||id;byEmail.set(key,{...byEmail.get(key),...user,id,email:normalized||user.email});}write({users:[...byEmail.values()],meta:{...read().meta,...incoming.meta}});}else write(incoming);return read().users}
 export function watchUsers(callback){const emit=()=>callback(read().users,null);emit();window.addEventListener(event,emit);window.addEventListener('storage',emit);return()=>{window.removeEventListener(event,emit);window.removeEventListener('storage',emit)}}
 export async function createUser({name,email}){const data=read(), normalized=email.trim().toLowerCase();const found=data.users.find(u=>u.email===normalized);if(found)return {...found,exists:true};const user={id:crypto.randomUUID(),name:name.trim(),email:normalized,createdAt:now(),sheet:{},sheetConnected:false,enabledPlatforms:[],connectors:{},connectorsCount:0,settings:{}};data.users.unshift(user);write(data);return user}
 export async function updateUser(id,patch){const data=read();const i=data.users.findIndex(u=>u.id===id);if(i<0)throw new Error('User not found');data.users[i]={...data.users[i],...patch,updatedAt:now()};write(data);return data.users[i]}
@@ -26,3 +32,24 @@ export async function syncFirebaseToLocal(uid){if(!db)throw new Error('Firebase 
 export async function saveQueue(id,queue){return updateUser(id,{contentQueue:queue})}
 export async function addQueueItem(id,item){const u=(await getUsers()).find(x=>x.id===id);const queue=[...(u?.contentQueue||[]),{id:crypto.randomUUID(),status:'draft',createdAt:now(),platformStatus:{},...item}];return updateUser(id,{contentQueue:queue})}
 export async function updateQueueItem(id,itemId,patch){const u=(await getUsers()).find(x=>x.id===id);return updateUser(id,{contentQueue:(u?.contentQueue||[]).map(x=>x.id===itemId?{...x,...patch,updatedAt:now()}:x)})}
+
+export async function syncProjectToFirebase(uid, extra={}) {
+  if(!db) throw new Error('Firebase is not configured.');
+  const data=read();
+  const payload={app:'auto-media',version:2,syncedAt:now(),users:data.users,meta:data.meta,platformApps:getAllPlatformApps(),...extra};
+  await setDoc(doc(db,'cloudUsers',uid,'project','state'),payload,{merge:true});
+  await setDoc(doc(db,'cloudUsers',uid,'project','syncHistory',now().replace(/[:.]/g,'-')),{
+    syncedAt:payload.syncedAt,userCount:data.users.length,reason:extra.reason||'manual'
+  });
+  return payload;
+}
+
+export async function syncProjectFromFirebase(uid) {
+  if(!db) throw new Error('Firebase is not configured.');
+  const snap=await getDocs(collection(db,'cloudUsers',uid,'project'));
+  const state=snap.docs.find(d=>d.id==='state')?.data();
+  if(!state||!Array.isArray(state.users)) throw new Error('No full Auto-Media project was found in Firebase.');
+  write({users:state.users,meta:state.meta||{}});
+  replacePlatformApps(state.platformApps||{});
+  return read();
+}

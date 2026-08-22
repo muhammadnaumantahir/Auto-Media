@@ -44,3 +44,11 @@ export function watchPlatformApp(platformId, callback) {
     window.removeEventListener('storage', emit);
   };
 }
+
+export function getAllPlatformApps() {
+  return read();
+}
+
+export function replacePlatformApps(data) {
+  write(data && typeof data === 'object' ? data : {});
+}

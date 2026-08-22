@@ -3,7 +3,6 @@ import { useApp } from "../context/AppContext";
 import { createUser, deleteUser } from "../lib/firestore";
 import { initials, avatarColor } from "../lib/avatar";
 import { useToast } from "../context/ToastContext";
-import BackupData from "../components/BackupData";
 
 export default function Users() {
   const { users, loadingUsers, activeUserId, setActiveUserId } = useApp();
@@ -159,7 +158,9 @@ export default function Users() {
           })}
         </div>
       )}
-      <BackupData />
+      <p className="text-xs text-muted mt-8">
+        Backups, cloud sync and the scheduler are on the <a href="#/operations" className="text-teal hover:underline">Operations</a> page.
+      </p>
     </div>
   );
 }

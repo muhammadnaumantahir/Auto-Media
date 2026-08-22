@@ -8,6 +8,8 @@ const steps = [
   { n: "03", to: "/connectors", label: "Connectors", desc: "Platform keys" },
   { n: "04", to: "/queue", label: "Queue", desc: "Validate & publish" },
   { n: "05", to: "/dashboard", label: "Dashboard", desc: "Overview" },
+  { n: "06", to: "/operations", label: "Operations", desc: "Scheduler & backup" },
+  { n: "07", to: "/jobs", label: "Jobs", desc: "Retries & diagnostics" },
 ];
 
 export default function Sidebar() {

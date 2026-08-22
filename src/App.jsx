@@ -9,6 +9,8 @@ import Connectors from "./pages/Connectors";
 import Dashboard from "./pages/Dashboard";
 import Guides from "./pages/Guides";
 import Queue from "./pages/Queue";
+import Operations from "./pages/Operations";
+import Jobs from "./pages/Jobs";
 import ErrorBoundary from "./components/ErrorBoundary";
 import HelpAssistant from "./components/HelpAssistant";
 
@@ -28,6 +30,8 @@ export default function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/guides" element={<Guides />} />
                 <Route path="/queue" element={<Queue />} />
+                <Route path="/operations" element={<Operations />} />
+                <Route path="/jobs" element={<Jobs />} />
               </Routes>
             </main>
           </div>

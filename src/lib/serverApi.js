@@ -36,3 +36,37 @@ export function runPosting({ sheet, connectors, app, batchSize }) {
 export function getResults(sheetUrl) {
   return call(`/api/results?sheetUrl=${encodeURIComponent(sheetUrl)}`);
 }
+
+export function getSchedulerStatus() {
+  return call('/api/scheduler/status');
+}
+
+export function configureScheduler({ enabled, intervalMinutes, batchSize, userId, payload }) {
+  return call('/api/scheduler/config', {
+    method: 'PUT',
+    body: JSON.stringify({ enabled, intervalMinutes, batchSize, userId, payload }),
+  });
+}
+
+export function runSchedulerNow({ payload, batchSize }) {
+  return call('/api/scheduler/run-now', {
+    method: 'POST',
+    body: JSON.stringify({ payload, batchSize }),
+  });
+}
+
+export function clearSchedulerHistory() {
+  return call('/api/scheduler/history', { method: 'DELETE' });
+}
+
+export function getJobs(limit = 100) {
+  return call(`/api/jobs?limit=${encodeURIComponent(limit)}`);
+}
+
+export function clearJobs() {
+  return call('/api/jobs', { method: 'DELETE' });
+}
+
+export function getDiagnostics() {
+  return call('/api/diagnostics');
+}
