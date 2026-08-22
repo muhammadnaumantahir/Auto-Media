@@ -60,9 +60,9 @@ a time:
    next run.
 5. Move to the next ready row.
 
-YouTube, Telegram, Discord, and Facebook (Pages) actually post right now.
-Other platforms show up in results as "not built yet" rather than
-silently pretending to succeed.
+YouTube, Telegram, Discord, Facebook (Pages), and LinkedIn actually post
+right now. Other platforms show up in results as "not built yet" rather
+than silently pretending to succeed.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -72,6 +72,11 @@ silently pretending to succeed.
 - **Facebook**: needs a Page ID + a long-lived Page access token. Works
   without App Review as long as you're an admin/developer/tester on the
   Facebook app used to generate the token.
+- **LinkedIn**: needs an access token (w_member_social scope) + your
+  author URN (`urn:li:person:...`). Getting that token still requires
+  creating a LinkedIn app and completing its OAuth flow once — this app
+  takes the resulting token pasted in, the same way Facebook's card does,
+  rather than doing the OAuth dance itself.
 
 ## Data storage
 

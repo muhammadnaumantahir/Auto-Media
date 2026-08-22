@@ -4,6 +4,7 @@ import { getGoogleAccessToken, uploadVideoToYoutube } from './youtube.mjs';
 import { postVideoToTelegram } from './telegram.mjs';
 import { postVideoToDiscord } from './discord.mjs';
 import { postVideoToFacebook } from './facebook.mjs';
+import { postVideoToLinkedIn } from './linkedin.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -75,6 +76,20 @@ async function postRowToFacebook(row, connector, app, localFolder) {
   });
 }
 
+async function postRowToLinkedin(row, connector, app, localFolder) {
+  if (!connector?.accessToken || !connector?.authorUrn) {
+    throw new Error('LinkedIn needs an access token and author URN saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToLinkedIn({
+    accessToken: connector.accessToken,
+    authorUrn: connector.authorUrn,
+    buffer,
+    title: row.title,
+    description: row.description,
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -82,6 +97,7 @@ const POSTERS = {
   telegram: postRowToTelegram,
   discord: postRowToDiscord,
   facebook: postRowToFacebook,
+  linkedin: postRowToLinkedin,
 };
 
 function resolveBatchSize(batchSize, totalReady) {

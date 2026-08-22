@@ -136,6 +136,29 @@ export const GUIDES = {
     ],
   },
 
+  linkedin: {
+    breadcrumb: ["LinkedIn Developers", "My Apps", "OAuth 2.0 tools"],
+    intro:
+      "LinkedIn needs a member access token with the w_member_social scope. Getting one requires creating a LinkedIn app and completing its OAuth flow once - this file assumes you already have that token, the same way Facebook's card takes a pasted token rather than doing OAuth in-app.",
+    steps: [
+      {
+        title: "Create a LinkedIn app",
+        body: "Go to LinkedIn Developers → Create app, attach it to a Company Page you administer (LinkedIn requires this even for posting as yourself), and request the “Share on LinkedIn” product.",
+        links: [{ label: "Open LinkedIn Developers", url: "https://www.linkedin.com/developers/apps" }],
+      },
+      {
+        title: "Get an access token with w_member_social",
+        body: "Under your app's Auth tab, run the OAuth 2.0 flow (or use LinkedIn's token generator tool) requesting the w_member_social scope, and copy the resulting access token.",
+        fields: ["accessToken"],
+      },
+      {
+        title: "Find your author URN",
+        body: "Call GET https://api.linkedin.com/v2/me with that token — the \"id\" field in the response goes into urn:li:person:<id>.",
+        fields: ["authorUrn"],
+      },
+    ],
+  },
+
   tiktok: {
     breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
     intro:
