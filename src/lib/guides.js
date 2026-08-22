@@ -140,7 +140,7 @@ export const GUIDES = {
       },
       {
         title: "Wait for approval, then wire it up",
-        body: "Once approved, follow Snap's Public Profile / Marketing API docs for the media upload and publishing flow, and replace the stub in functions/lib/platforms/snapchat.js with the real calls.",
+        body: "Once approved, follow Snap's Public Profile / Marketing API docs for the media upload and publishing flow, and add the real calls to src/lib/runPosting.js alongside the YouTube poster.",
       },
     ],
   },

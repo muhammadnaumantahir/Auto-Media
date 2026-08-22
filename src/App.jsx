@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Guides from "./pages/Guides";
 import Queue from "./pages/Queue";
 import ErrorBoundary from "./components/ErrorBoundary";
+import HelpAssistant from "./components/HelpAssistant";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             </main>
           </div>
         </div>
+        <HelpAssistant />
       </HashRouter>
     </AppProvider></ToastProvider></ErrorBoundary>
   );

@@ -52,6 +52,10 @@ export default function Dashboard() {
     return <p className="text-muted text-sm">Add a user first, then come back to this step.</p>;
   }
 
+  const sheetReady = !!sheet;
+  const platformsReady = connectors.length > 0;
+  const setupComplete = sheetReady && platformsReady;
+
   return (
     <div className="max-w-4xl">
       <header className="mb-6 flex items-start justify-between gap-4 animate-fade-up">
@@ -62,10 +66,51 @@ export default function Dashboard() {
             One row on the sheet becomes one queued post, fanned out to every connected platform.
           </p>
         </div>
-        <button className="btn-ghost whitespace-nowrap" onClick={handleRunNow} disabled={running}>
+        <button
+          className="btn-ghost whitespace-nowrap"
+          onClick={handleRunNow}
+          disabled={running || !setupComplete}
+          title={!setupComplete ? "Finish setup below before you can post" : undefined}
+        >
           {running ? "Posting…" : "Post ready rows now"}
         </button>
       </header>
+
+      <div
+        className="flex flex-wrap gap-2 mb-6 animate-fade-up"
+        style={{ animationDelay: "20ms" }}
+      >
+        <a
+          href="#/sheet"
+          className={`text-xs font-mono px-3 py-1.5 rounded-full border transition-colors ${
+            sheetReady
+              ? "border-teal/40 text-teal bg-teal/10"
+              : "border-rose/40 text-rose bg-rose/10 hover:bg-rose/20"
+          }`}
+        >
+          {sheetReady ? "● Sheet connected" : "○ Connect a sheet →"}
+        </a>
+        <a
+          href="#/connectors"
+          className={`text-xs font-mono px-3 py-1.5 rounded-full border transition-colors ${
+            platformsReady
+              ? "border-teal/40 text-teal bg-teal/10"
+              : "border-rose/40 text-rose bg-rose/10 hover:bg-rose/20"
+          }`}
+        >
+          {platformsReady
+            ? `● ${connectors.length} platform${connectors.length === 1 ? "" : "s"} connected`
+            : "○ Connect a platform →"}
+        </a>
+      </div>
+
+      {!setupComplete && (
+        <div className="card p-4 mb-6 border-dashed text-xs text-muted">
+          Finish the steps above before posting — {!sheetReady && "connect a sheet"}
+          {!sheetReady && !platformsReady && " and "}
+          {!platformsReady && "connect at least one platform"}.
+        </div>
+      )}
 
       {runError && (
         <div className="card p-4 mb-6 border-rose/40 text-rose text-xs">{runError}</div>
