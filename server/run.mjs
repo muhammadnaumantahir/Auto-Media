@@ -1,6 +1,9 @@
 import { readSheetRows, writeStatus, isReadyRow } from './sheets.mjs';
 import { resolveVideo } from './videoSource.mjs';
 import { getGoogleAccessToken, uploadVideoToYoutube } from './youtube.mjs';
+import { postVideoToTelegram } from './telegram.mjs';
+import { postVideoToDiscord } from './discord.mjs';
+import { postVideoToFacebook } from './facebook.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -30,9 +33,56 @@ async function postRowToYoutube(row, connector, app, localFolder) {
   });
 }
 
-// Only YouTube actually posts anywhere right now. Other platforms are
-// listed so results are honest about what did and didn't happen.
-const POSTERS = { youtube: postRowToYoutube };
+async function postRowToTelegram(row, connector, app, localFolder) {
+  if (!connector?.botToken || !connector?.chatId) {
+    throw new Error('Telegram needs a bot token and chat ID saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToTelegram({
+    botToken: connector.botToken,
+    chatId: connector.chatId,
+    buffer,
+    filename: 'video.mp4',
+    caption: [row.title, row.description].filter(Boolean).join('\n\n'),
+  });
+}
+
+async function postRowToDiscord(row, connector, app, localFolder) {
+  if (!connector?.webhookUrl) {
+    throw new Error('Discord needs a webhook URL saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToDiscord({
+    webhookUrl: connector.webhookUrl,
+    buffer,
+    filename: 'video.mp4',
+    content: row.title || '',
+  });
+}
+
+async function postRowToFacebook(row, connector, app, localFolder) {
+  if (!connector?.pageId || !connector?.pageAccessToken) {
+    throw new Error('Facebook needs a Page ID and Page access token saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToFacebook({
+    pageId: connector.pageId,
+    pageAccessToken: connector.pageAccessToken,
+    buffer,
+    filename: 'video.mp4',
+    title: row.title,
+    description: row.description,
+  });
+}
+
+// Real posters. Platforms not listed here show "not built yet" in
+// results rather than silently pretending to succeed.
+const POSTERS = {
+  youtube: postRowToYoutube,
+  telegram: postRowToTelegram,
+  discord: postRowToDiscord,
+  facebook: postRowToFacebook,
+};
 
 function resolveBatchSize(batchSize, totalReady) {
   if (batchSize === 'all') return totalReady;

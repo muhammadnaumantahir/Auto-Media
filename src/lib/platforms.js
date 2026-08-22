@@ -12,7 +12,27 @@ const youtubeCreds = [
   { key: 'channelId', label: 'Channel ID', placeholder: 'From YouTube Studio → Settings → Channel' },
 ];
 
-const fieldsFor = (id) => (id === 'youtube' ? youtubeCreds : creds);
+const telegramCreds = [
+  { key: 'botToken', label: 'Bot token', placeholder: 'From @BotFather', secret: true },
+  { key: 'chatId', label: 'Chat ID', placeholder: '@channelname or a numeric chat ID' },
+];
+
+const discordCreds = [
+  { key: 'webhookUrl', label: 'Webhook URL', placeholder: 'https://discord.com/api/webhooks/...', secret: true },
+];
+
+const facebookCreds = [
+  { key: 'pageId', label: 'Page ID', placeholder: 'From your Page\'s About section' },
+  { key: 'pageAccessToken', label: 'Page access token', placeholder: 'Long-lived token from Graph API Explorer', secret: true },
+];
+
+const fieldsFor = (id) => {
+  if (id === 'youtube') return youtubeCreds;
+  if (id === 'telegram') return telegramCreds;
+  if (id === 'discord') return discordCreds;
+  if (id === 'facebook') return facebookCreds;
+  return creds;
+};
 
 // App-level (shared, configured once) credentials per platform. Most
 // platforms don't need this split yet — only YouTube does for now.
@@ -25,5 +45,5 @@ export const APP_FIELDS = {
 
 export const PLATFORMS=[
 ['youtube','YouTube','YT','Video & Short Form','Videos and Shorts'],['tiktok','TikTok','TT','Video & Short Form','Videos and short clips'],['instagram','Instagram','IG','Video & Short Form','Reels and video'],['facebook','Facebook','FB','Video & Short Form','Page videos and Reels'],['snapchat','Snapchat','SC','Video & Short Form','Short video distribution'],['pinterest','Pinterest','PI','Video & Short Form','Video Pins'],['threads','Threads','TH','Social & Professional','Video and text posts'],['linkedin','LinkedIn','IN','Social & Professional','Professional video posts'],['x','X','X','Social & Professional','Video posts'],['bluesky','Bluesky','BS','Social & Professional','Social distribution'],['reddit','Reddit','RD','Community & Distribution','Community video posts'],['telegram','Telegram','TG','Community & Distribution','Channel distribution'],['discord','Discord','DC','Community & Distribution','Community distribution'],['google-business','Google Business','GB','Community & Distribution','Business content'],['mastodon','Mastodon','MA','Community & Distribution','Federated publishing']
-].map(([id,name,short,category,description])=>({id,name,short,category,description,fields:fieldsFor(id),appFields:APP_FIELDS[id]||null,requirements:id==='youtube'?['OAuth consent screen','YouTube Data API','videos.insert permission']:id==='tiktok'?['Registered developer app','Content Posting API','video.publish authorization']:['Developer app or authorized account','OAuth/API permission','Valid publishing access']}));
+].map(([id,name,short,category,description])=>({id,name,short,category,description,fields:fieldsFor(id),appFields:APP_FIELDS[id]||null,requirements:id==='youtube'?['OAuth consent screen','YouTube Data API','videos.insert permission']:id==='telegram'?['A bot created via @BotFather','Bot added to the target chat/channel as admin']:id==='discord'?['A channel webhook (Channel Settings → Integrations)']:id==='facebook'?['A Facebook Page you administer','A long-lived Page access token']:id==='tiktok'?['Registered developer app','Content Posting API','video.publish authorization']:['Developer app or authorized account','OAuth/API permission','Valid publishing access']}));
 export const PLATFORM_FIELDS={youtube:['title','description','tags','video','thumbnail','schedule'],tiktok:['caption','tags','video','schedule'],pinterest:['title','description','video','thumbnail','destinationUrl','schedule'],default:['title','description','tags','video','thumbnail','schedule']};

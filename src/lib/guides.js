@@ -96,6 +96,46 @@ export const GUIDES = {
     ],
   },
 
+  telegram: {
+    breadcrumb: ["@BotFather", "Telegram Bot API"],
+    intro:
+      "The only platform here with zero review process — a bot token works the moment @BotFather gives it to you.",
+    steps: [
+      {
+        title: "Create a bot",
+        body: "Message @BotFather on Telegram, send /newbot, and follow the prompts. It replies with your bot token — copy it.",
+        fields: ["botToken"],
+        links: [{ label: "Open @BotFather", url: "https://t.me/BotFather" }],
+      },
+      {
+        title: "Add the bot to your channel or group",
+        body: "Open your channel/group → Administrators → Add Admin → search for your bot's username → give it permission to post messages.",
+      },
+      {
+        title: "Find the chat ID",
+        body: "For a public channel, the chat ID is just @yourchannelname. For a private channel or group, send any message in it, then visit https://api.telegram.org/bot<token>/getUpdates in a browser and read the numeric chat id from the response.",
+        fields: ["chatId"],
+      },
+    ],
+  },
+
+  discord: {
+    breadcrumb: ["Channel Settings", "Integrations", "Webhooks"],
+    intro:
+      "No bot, no developer app, no review — a webhook is a per-channel setting. Note: Discord caps webhook attachments at 8MB (25MB on a boosted server), so this works best for short clips.",
+    steps: [
+      {
+        title: "Create a webhook",
+        body: "In Discord, open the target channel's Settings → Integrations → Webhooks → New Webhook. Name it, then click Copy Webhook URL.",
+        fields: ["webhookUrl"],
+      },
+      {
+        title: "That's it",
+        body: "Paste the webhook URL into the Discord card below and save — there's no separate account or token to manage.",
+      },
+    ],
+  },
+
   tiktok: {
     breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
     intro:

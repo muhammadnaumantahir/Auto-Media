@@ -60,8 +60,18 @@ a time:
    next run.
 5. Move to the next ready row.
 
-Only YouTube actually posts right now. Other platforms show up in results
-as "not built yet" rather than silently pretending to succeed.
+YouTube, Telegram, Discord, and Facebook (Pages) actually post right now.
+Other platforms show up in results as "not built yet" rather than
+silently pretending to succeed.
+
+- **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
+  review, works immediately.
+- **Discord**: needs a channel webhook URL. No app/bot needed. Note
+  Discord's own attachment limit (8MB, 25MB on a boosted server) — larger
+  videos will fail with Discord's real error.
+- **Facebook**: needs a Page ID + a long-lived Page access token. Works
+  without App Review as long as you're an admin/developer/tester on the
+  Facebook app used to generate the token.
 
 ## Data storage
 
