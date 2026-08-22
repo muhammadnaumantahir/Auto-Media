@@ -1,6 +1,0 @@
-name = "auto-media"
-compatibility_date = "2026-08-21"
-
-# Cloudflare Pages will pick up /functions automatically.
-# Configure VIDEO_RESOLVER_URL and, if needed, VIDEO_RESOLVER_TOKEN in the
-# Pages project environment variables.

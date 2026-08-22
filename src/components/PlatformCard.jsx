@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import { testYoutubeConnection } from "../lib/serverApi";
+import { getPlatformApp } from "../lib/platformApps";
 
 export default function PlatformCard({ platform, saved, onSave, onRemove }) {
   const [values, setValues] = useState(() => {
@@ -11,6 +13,7 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
     return initial;
   });
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
   const toast = useToast();
 
   // `saved` often arrives a tick after this component first mounts (it's
@@ -47,6 +50,25 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
       toast.success(`${platform.name} disconnected.`);
     } catch (err) {
       toast.error(err.message || `Could not disconnect ${platform.name}.`);
+    }
+  }
+
+  async function handleTest() {
+    setTesting(true);
+    try {
+      if (platform.id === "youtube") {
+        const app = getPlatformApp("youtube");
+        await testYoutubeConnection({
+          clientId: app?.clientId,
+          clientSecret: app?.clientSecret,
+          refreshToken: values.refreshToken,
+        });
+        toast.success("YouTube connection works — token refreshed successfully.");
+      }
+    } catch (err) {
+      toast.error(err.message || "Connection test failed.");
+    } finally {
+      setTesting(false);
     }
   }
 
@@ -126,6 +148,11 @@ export default function PlatformCard({ platform, saved, onSave, onRemove }) {
         {isConnected && (
           <button className="btn-ghost" onClick={handleRemove}>
             Disconnect
+          </button>
+        )}
+        {platform.id === "youtube" && isConnected && (
+          <button className="btn-ghost" onClick={handleTest} disabled={testing}>
+            {testing ? "Testing…" : "Test connection"}
           </button>
         )}
       </div>
