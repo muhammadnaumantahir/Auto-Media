@@ -5,6 +5,7 @@ import { postVideoToTelegram } from './telegram.mjs';
 import { postVideoToDiscord } from './discord.mjs';
 import { postVideoToFacebook } from './facebook.mjs';
 import { postVideoToLinkedIn } from './linkedin.mjs';
+import { postVideoToPinterest } from './pinterest.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -90,6 +91,22 @@ async function postRowToLinkedin(row, connector, app, localFolder) {
   });
 }
 
+async function postRowToPinterest(row, connector, app, localFolder) {
+  if (!connector?.accessToken || !connector?.boardId) {
+    throw new Error('Pinterest needs an access token and a board ID saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToPinterest({
+    accessToken: connector.accessToken,
+    boardId: connector.boardId,
+    buffer,
+    filename: 'video.mp4',
+    title: row.title,
+    description: row.description,
+    link: row.destinationUrl,
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -98,6 +115,7 @@ const POSTERS = {
   discord: postRowToDiscord,
   facebook: postRowToFacebook,
   linkedin: postRowToLinkedin,
+  pinterest: postRowToPinterest,
 };
 
 function resolveBatchSize(batchSize, totalReady) {

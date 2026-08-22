@@ -159,6 +159,29 @@ export const GUIDES = {
     ],
   },
 
+  pinterest: {
+    breadcrumb: ["Pinterest Developers", "My Apps", "Trial access"],
+    intro:
+      "Pinterest's API accepts the video file directly (a presigned upload), so this is one of the few non-YouTube platforms that also works with your local video folder, not just URLs.",
+    steps: [
+      {
+        title: "Create a Pinterest app",
+        body: "Go to Pinterest Developers → create an app, and request Trial Access for the scopes pins:write and boards:read — trial access works immediately for your own account without a review wait.",
+        links: [{ label: "Open Pinterest Developers", url: "https://developers.pinterest.com/apps/" }],
+      },
+      {
+        title: "Get an access token",
+        body: "Complete the OAuth flow for your app (Pinterest's docs include a quick-start using their own OAuth tool) and copy the resulting access token.",
+        fields: ["accessToken"],
+      },
+      {
+        title: "Find the board ID",
+        body: "Open the board on pinterest.com and copy the number from its URL, or call GET https://api.pinterest.com/v5/boards with your token and read the \"id\" field.",
+        fields: ["boardId"],
+      },
+    ],
+  },
+
   tiktok: {
     breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
     intro:

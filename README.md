@@ -60,9 +60,9 @@ a time:
    next run.
 5. Move to the next ready row.
 
-YouTube, Telegram, Discord, Facebook (Pages), and LinkedIn actually post
-right now. Other platforms show up in results as "not built yet" rather
-than silently pretending to succeed.
+YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, and Pinterest
+actually post right now. Other platforms show up in results as "not
+built yet" rather than silently pretending to succeed.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -77,6 +77,11 @@ than silently pretending to succeed.
   creating a LinkedIn app and completing its OAuth flow once — this app
   takes the resulting token pasted in, the same way Facebook's card does,
   rather than doing the OAuth dance itself.
+- **Pinterest**: needs an access token (pins:write scope, works
+  immediately under "Trial Access" — no review wait) + a board ID. One of
+  the few non-YouTube platforms that also accepts your local video
+  folder, not just URLs — Pinterest takes a direct upload rather than
+  fetching from a link.
 
 ## Data storage
 
