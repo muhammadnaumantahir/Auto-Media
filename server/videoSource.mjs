@@ -79,6 +79,27 @@ function looksLikeUrl(value) {
 }
 
 /**
+ * For platforms that fetch the video themselves from a URL (Instagram,
+ * Threads) rather than accepting raw bytes - converts a Google Drive
+ * share link into its direct-download form, or returns any other URL
+ * unchanged. Throws if the row isn't a URL at all, since there's no way
+ * to hand a local file to a platform that insists on fetching by URL.
+ */
+export function resolvePublicVideoUrl(videoCell) {
+  const value = (videoCell || '').trim();
+  if (!value) throw new Error('This row has no video value.');
+  if (!looksLikeUrl(value)) {
+    throw new Error(
+      `"${value}" is a local filename, but this platform requires a public video URL (it fetches the video itself) - a Google Drive link or a direct video URL is required, a local folder file won't work here.`
+    );
+  }
+  const driveId = extractDriveId(value);
+  return driveId ? driveDownloadUrl(driveId) : value;
+}
+
+export { looksLikeUrl };
+
+/**
  * Resolves a sheet row's video cell into raw bytes.
  *   - Starts with http(s):// → fetched directly (a Google Drive share
  *     link is detected and handled automatically)

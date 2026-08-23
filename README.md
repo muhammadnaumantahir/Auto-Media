@@ -62,8 +62,9 @@ a time:
 5. Move to the next ready row.
 
 YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, Pinterest,
-Reddit, and X actually post right now. Other platforms show up in
-results as "not built yet" rather than silently pretending to succeed.
+Reddit, X, and Instagram actually post right now. Other platforms show
+up in results as "not built yet" rather than silently pretending to
+succeed.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -96,6 +97,15 @@ results as "not built yet" rather than silently pretending to succeed.
   OAuth 1.0a request signing (HMAC-SHA1) instead of a bearer token; this
   app signs each request itself. Uploads in 4MB chunks and polls for
   processing before posting the tweet.
+- **Instagram**: needs an Instagram Business Account ID + a long-lived
+  access token (instagram_content_publish scope). Structurally different
+  from every other platform here — Instagram fetches the video itself
+  from a URL rather than accepting uploaded bytes, so **this only works
+  for rows whose video cell is a real URL or Google Drive link — it
+  cannot post from your local video folder at all**, and there's no way
+  around that on Instagram's side. Very large Drive files can also fail
+  here even though they work elsewhere, since Instagram's fetcher can't
+  click through Drive's virus-scan warning page.
 
 ## Data storage
 

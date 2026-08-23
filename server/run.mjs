@@ -1,5 +1,5 @@
 import { readSheetRows, writeStatus, isReadyRow } from './sheets.mjs';
-import { resolveVideo } from './videoSource.mjs';
+import { resolveVideo, resolvePublicVideoUrl } from './videoSource.mjs';
 import { getGoogleAccessToken, uploadVideoToYoutube } from './youtube.mjs';
 import { postVideoToTelegram } from './telegram.mjs';
 import { postVideoToDiscord } from './discord.mjs';
@@ -8,6 +8,7 @@ import { postVideoToLinkedIn } from './linkedin.mjs';
 import { postVideoToPinterest } from './pinterest.mjs';
 import { postVideoToReddit } from './reddit.mjs';
 import { postVideoToX } from './x.mjs';
+import { postVideoToInstagram } from './instagram.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -142,6 +143,21 @@ async function postRowToX(row, connector, app, localFolder) {
   });
 }
 
+async function postRowToInstagram(row, connector) {
+  if (!connector?.igUserId || !connector?.accessToken) {
+    throw new Error('Instagram needs an Instagram Business Account ID and access token saved for this user.');
+  }
+  // Instagram fetches the video itself from a URL - it never receives
+  // raw bytes, so a local-folder filename can't work here at all.
+  const videoUrl = resolvePublicVideoUrl(row.video);
+  return postVideoToInstagram({
+    igUserId: connector.igUserId,
+    accessToken: connector.accessToken,
+    videoUrl,
+    caption: [row.title, row.description].filter(Boolean).join('\n\n'),
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -153,6 +169,7 @@ const POSTERS = {
   pinterest: postRowToPinterest,
   reddit: postRowToReddit,
   x: postRowToX,
+  instagram: postRowToInstagram,
 };
 
 function resolveBatchSize(batchSize, totalReady) {

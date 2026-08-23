@@ -70,6 +70,10 @@ export const GUIDES = {
         fields: ["accessToken"],
         links: [{ label: "Long-lived token guide", url: "https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived" }],
       },
+      {
+        title: "Important: video must be a public URL",
+        body: "Instagram fetches the video itself rather than accepting an upload - a row's video cell must be a real URL (a direct link or Google Drive share link), never a local-folder filename. Very large Google Drive files can also fail here even though they work on other platforms, because Instagram's fetcher can't get past Drive's \"can't scan for viruses\" warning page the way this app's own downloader can.",
+      },
     ],
   },
 
