@@ -62,9 +62,10 @@ a time:
 5. Move to the next ready row.
 
 YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, Pinterest,
-Reddit, X, and Instagram actually post right now. Other platforms show
-up in results as "not built yet" rather than silently pretending to
-succeed.
+Reddit, X, Instagram, and Threads actually post right now. TikTok
+shows up in results as "not built yet" rather than silently pretending
+to succeed — its Content Posting API is gated behind an app-audit
+process that no amount of code here can bypass.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -106,6 +107,9 @@ succeed.
   around that on Instagram's side. Very large Drive files can also fail
   here even though they work elsewhere, since Instagram's fetcher can't
   click through Drive's virus-scan warning page.
+- **Threads**: needs a Threads User ID + an access token
+  (threads_content_publish scope). Same URL-only requirement as
+  Instagram, for the same reason — Threads fetches the video itself too.
 
 ## Data storage
 

@@ -237,6 +237,33 @@ export const GUIDES = {
     ],
   },
 
+  threads: {
+    breadcrumb: ["Meta for Developers", "Threads API", "Access token"],
+    intro:
+      "Threads is a separate Meta product from Instagram's Graph API (different host, different scope), but shares Instagram's key constraint: it fetches the video itself from a URL rather than accepting an upload.",
+    steps: [
+      {
+        title: "Create a Meta developer app with the Threads product",
+        body: "developers.facebook.com/apps → Create App → add the \"Threads\" product from the dashboard.",
+        links: [{ label: "Open Meta for Developers", url: "https://developers.facebook.com/apps" }],
+      },
+      {
+        title: "Get an access token with threads_content_publish",
+        body: "Complete the Threads API's OAuth flow (documented under the Threads product in your app dashboard) requesting threads_basic and threads_content_publish scopes.",
+        fields: ["accessToken"],
+      },
+      {
+        title: "Find your Threads User ID",
+        body: "Call GET https://graph.threads.net/v1.0/me?fields=id with that token to get your Threads user ID.",
+        fields: ["threadsUserId"],
+      },
+      {
+        title: "Important: video must be a public URL",
+        body: "Same requirement as Instagram - a row's video cell must be a real URL, never a local-folder filename, and very large Google Drive files can still fail here for the same reason (Threads' fetcher can't get past Drive's virus-scan warning page).",
+      },
+    ],
+  },
+
   tiktok: {
     breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
     intro:

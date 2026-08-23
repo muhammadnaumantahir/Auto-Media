@@ -9,6 +9,7 @@ import { postVideoToPinterest } from './pinterest.mjs';
 import { postVideoToReddit } from './reddit.mjs';
 import { postVideoToX } from './x.mjs';
 import { postVideoToInstagram } from './instagram.mjs';
+import { postVideoToThreads } from './threads.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -158,6 +159,20 @@ async function postRowToInstagram(row, connector) {
   });
 }
 
+async function postRowToThreads(row, connector) {
+  if (!connector?.threadsUserId || !connector?.accessToken) {
+    throw new Error('Threads needs a Threads User ID and access token saved for this user.');
+  }
+  // Same constraint as Instagram - Threads fetches from a URL itself.
+  const videoUrl = resolvePublicVideoUrl(row.video);
+  return postVideoToThreads({
+    threadsUserId: connector.threadsUserId,
+    accessToken: connector.accessToken,
+    videoUrl,
+    text: [row.title, row.description].filter(Boolean).join('\n\n'),
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -170,6 +185,7 @@ const POSTERS = {
   reddit: postRowToReddit,
   x: postRowToX,
   instagram: postRowToInstagram,
+  threads: postRowToThreads,
 };
 
 function resolveBatchSize(batchSize, totalReady) {
