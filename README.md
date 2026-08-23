@@ -61,9 +61,9 @@ a time:
    next run.
 5. Move to the next ready row.
 
-YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, Pinterest, and
-Reddit actually post right now. Other platforms show up in results as
-"not built yet" rather than silently pretending to succeed.
+YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, Pinterest,
+Reddit, and X actually post right now. Other platforms show up in
+results as "not built yet" rather than silently pretending to succeed.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -90,6 +90,12 @@ Reddit actually post right now. Other platforms show up in results as
   column is mapped to a real image URL, or Reddit rejects the post.
   Uses Node's built-in WebSocket client to wait for Reddit's processing
   confirmation before returning the final post link.
+- **X**: needs an API key/secret and an access token/secret (all four,
+  generated for your own account under "Keys and tokens" — make sure the
+  app has Read+Write access, not Read-only). The only platform here using
+  OAuth 1.0a request signing (HMAC-SHA1) instead of a bearer token; this
+  app signs each request itself. Uploads in 4MB chunks and polls for
+  processing before posting the tweet.
 
 ## Data storage
 

@@ -210,6 +210,29 @@ export const GUIDES = {
     ],
   },
 
+  x: {
+    breadcrumb: ["developer.x.com", "Projects & Apps", "Keys and tokens"],
+    intro:
+      "X is the one platform here that still requires OAuth 1.0a request signing (every request is individually signed with HMAC-SHA1) rather than a simple bearer token - the app handles the signing itself, you just need the four values below.",
+    steps: [
+      {
+        title: "Create an app with read + write access",
+        body: "In the developer.x.com portal, create a Project and App, then under \"User authentication settings\" make sure the app has Read and Write permission (not Read-only) - video posting will fail otherwise.",
+        links: [{ label: "Open developer.x.com", url: "https://developer.x.com/en/portal/dashboard" }],
+      },
+      {
+        title: "Copy the API key and secret",
+        body: "Under the app's \"Keys and tokens\" tab, copy the API Key and API Key Secret (sometimes labeled Consumer Key/Secret).",
+        fields: ["apiKey", "apiSecret"],
+      },
+      {
+        title: "Generate an access token for your own account",
+        body: "Still on \"Keys and tokens\", generate an Access Token and Secret for your own account - this authorizes the app to post as you, with no separate redirect flow.",
+        fields: ["accessToken", "accessTokenSecret"],
+      },
+    ],
+  },
+
   tiktok: {
     breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
     intro:

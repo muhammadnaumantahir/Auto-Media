@@ -7,6 +7,7 @@ import { postVideoToFacebook } from './facebook.mjs';
 import { postVideoToLinkedIn } from './linkedin.mjs';
 import { postVideoToPinterest } from './pinterest.mjs';
 import { postVideoToReddit } from './reddit.mjs';
+import { postVideoToX } from './x.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -126,6 +127,21 @@ async function postRowToReddit(row, connector, app, localFolder) {
   });
 }
 
+async function postRowToX(row, connector, app, localFolder) {
+  if (!connector?.apiKey || !connector?.apiSecret || !connector?.accessToken || !connector?.accessTokenSecret) {
+    throw new Error('X needs an API key, API secret, access token, and access token secret saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToX({
+    apiKey: connector.apiKey,
+    apiSecret: connector.apiSecret,
+    accessToken: connector.accessToken,
+    accessTokenSecret: connector.accessTokenSecret,
+    buffer,
+    text: row.title,
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -136,6 +152,7 @@ const POSTERS = {
   linkedin: postRowToLinkedin,
   pinterest: postRowToPinterest,
   reddit: postRowToReddit,
+  x: postRowToX,
 };
 
 function resolveBatchSize(batchSize, totalReady) {
