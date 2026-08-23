@@ -182,6 +182,34 @@ export const GUIDES = {
     ],
   },
 
+  reddit: {
+    breadcrumb: ["reddit.com/prefs/apps", "OAuth (script app)", "Sheet mapping"],
+    intro:
+      "Reddit's script-app auth works with your account's own username/password directly - no interactive redirect needed. The one hard requirement to know up front: Reddit REQUIRES a poster/thumbnail image on every video post, so this only works for rows where the thumbnail column is a real image URL.",
+    steps: [
+      {
+        title: "Create a script app",
+        body: "Go to reddit.com/prefs/apps → create app → choose \"script\". Reddit shows a client ID (under the app name) and a client secret.",
+        fields: ["clientId", "clientSecret"],
+        links: [{ label: "Open Reddit app preferences", url: "https://www.reddit.com/prefs/apps" }],
+      },
+      {
+        title: "Use the posting account's own login",
+        body: "Script apps authenticate as a specific Reddit account using its normal username and password - the same account that will appear as the post's author.",
+        fields: ["username", "password"],
+      },
+      {
+        title: "Set the target subreddit",
+        body: "Just the name, no r/ prefix (e.g. myvideos). The account needs permission to post there — your own profile or a subreddit you moderate is safest while testing.",
+        fields: ["subreddit"],
+      },
+      {
+        title: "Map a thumbnail column",
+        body: "On the Sheet page, make sure a column with real image URLs (jpg/png) is mapped to \"Thumbnail\" - Reddit rejects video posts that don't include one, there's no way around this on Reddit's side.",
+      },
+    ],
+  },
+
   tiktok: {
     breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
     intro:

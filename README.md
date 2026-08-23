@@ -7,7 +7,8 @@ video, posts it, and writes the result back into the sheet.
 
 ## Run it
 
-Two processes, both on your own machine:
+Requires Node 22+ (the Reddit poster uses the built-in `WebSocket`
+client). Two processes, both on your own machine:
 
 ```bash
 npm install
@@ -60,9 +61,9 @@ a time:
    next run.
 5. Move to the next ready row.
 
-YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, and Pinterest
-actually post right now. Other platforms show up in results as "not
-built yet" rather than silently pretending to succeed.
+YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, Pinterest, and
+Reddit actually post right now. Other platforms show up in results as
+"not built yet" rather than silently pretending to succeed.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -82,6 +83,13 @@ built yet" rather than silently pretending to succeed.
   the few non-YouTube platforms that also accepts your local video
   folder, not just URLs — Pinterest takes a direct upload rather than
   fetching from a link.
+- **Reddit**: needs a Reddit "script" app's client ID/secret plus the
+  posting account's own username/password (no interactive OAuth
+  redirect), and a subreddit. Reddit's own API requires a poster/
+  thumbnail image on every video post — make sure the sheet's thumbnail
+  column is mapped to a real image URL, or Reddit rejects the post.
+  Uses Node's built-in WebSocket client to wait for Reddit's processing
+  confirmation before returning the final post link.
 
 ## Data storage
 

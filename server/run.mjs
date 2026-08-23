@@ -6,6 +6,7 @@ import { postVideoToDiscord } from './discord.mjs';
 import { postVideoToFacebook } from './facebook.mjs';
 import { postVideoToLinkedIn } from './linkedin.mjs';
 import { postVideoToPinterest } from './pinterest.mjs';
+import { postVideoToReddit } from './reddit.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -107,6 +108,24 @@ async function postRowToPinterest(row, connector, app, localFolder) {
   });
 }
 
+async function postRowToReddit(row, connector, app, localFolder) {
+  if (!connector?.clientId || !connector?.clientSecret || !connector?.username || !connector?.password || !connector?.subreddit) {
+    throw new Error('Reddit needs a client ID, client secret, username, password, and subreddit saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToReddit({
+    clientId: connector.clientId,
+    clientSecret: connector.clientSecret,
+    username: connector.username,
+    password: connector.password,
+    subreddit: connector.subreddit,
+    buffer,
+    filename: 'video.mp4',
+    title: row.title,
+    thumbnailUrl: row.thumbnail,
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -116,6 +135,7 @@ const POSTERS = {
   facebook: postRowToFacebook,
   linkedin: postRowToLinkedin,
   pinterest: postRowToPinterest,
+  reddit: postRowToReddit,
 };
 
 function resolveBatchSize(batchSize, totalReady) {
