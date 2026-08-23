@@ -157,9 +157,15 @@ export default function Dashboard() {
                     {r.title || `Row ${r.sheetRow}`} <span className="text-muted">· {r.platform}</span>
                   </span>
                   {r.ok ? (
-                    <a href={r.url} target="_blank" rel="noreferrer" className="text-teal font-mono shrink-0">
-                      posted ↗
-                    </a>
+                    r.url ? (
+                      <a href={r.url} target="_blank" rel="noreferrer" className="text-teal font-mono shrink-0">
+                        posted ↗
+                      </a>
+                    ) : (
+                      <span className="text-teal font-mono shrink-0" title={r.note || ''}>
+                        posted {r.note ? '(private)' : ''}
+                      </span>
+                    )
                   ) : (
                     <span className="text-rose font-mono shrink-0">{r.error}</span>
                   )}

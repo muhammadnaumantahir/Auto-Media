@@ -10,6 +10,7 @@ import { postVideoToReddit } from './reddit.mjs';
 import { postVideoToX } from './x.mjs';
 import { postVideoToInstagram } from './instagram.mjs';
 import { postVideoToThreads } from './threads.mjs';
+import { postVideoToTikTok } from './tiktok.mjs';
 import { recordPlatformResult } from './results.mjs';
 import { createJob, updateJob, classifyError } from './jobs.mjs';
 
@@ -173,6 +174,18 @@ async function postRowToThreads(row, connector) {
   });
 }
 
+async function postRowToTiktok(row, connector, app, localFolder) {
+  if (!connector?.accessToken) {
+    throw new Error('TikTok needs an access token saved for this user.');
+  }
+  const { buffer } = await resolveVideo(row.video, localFolder);
+  return postVideoToTikTok({
+    accessToken: connector.accessToken,
+    buffer,
+    title: row.title,
+  });
+}
+
 // Real posters. Platforms not listed here show "not built yet" in
 // results rather than silently pretending to succeed.
 const POSTERS = {
@@ -186,6 +199,7 @@ const POSTERS = {
   x: postRowToX,
   instagram: postRowToInstagram,
   threads: postRowToThreads,
+  tiktok: postRowToTiktok,
 };
 
 function resolveBatchSize(batchSize, totalReady) {
@@ -249,7 +263,7 @@ export async function runPosting({ sheet, connectors, app, batchSize = '1', maxA
           if (!poster) throw new Error("Posting to this platform isn't built yet.");
           if (!connectorMap[platform]) throw new Error('Not connected for this user.');
           const posted = await poster(row, connectorMap[platform], app?.[platform], sheet.localFolder);
-          finalResult = { ...entry, ok: true, url: posted.url, attempts: attempt };
+          finalResult = { ...entry, ok: true, url: posted.url, note: posted.note, attempts: attempt };
           break;
         } catch (err) {
           const policy = classifyError(err);

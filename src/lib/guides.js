@@ -265,9 +265,9 @@ export const GUIDES = {
   },
 
   tiktok: {
-    breadcrumb: ["TikTok Developers", "Content Posting API", "Domain Verification", "Login Kit"],
+    breadcrumb: ["TikTok Developers", "Content Posting API", "Login Kit"],
     intro:
-      "TikTok's Content Posting API can pull a video directly from its URL — but the hosting domain has to be verified first, and posts stay private until your app is audited.",
+      "This app uploads the video file directly (FILE_UPLOAD), not by URL - no domain verification needed. The one thing to know up front: until your app passes TikTok's Content Posting audit, every post is forced to SELF_ONLY (private, visible only in your own TikTok app) - that's a real platform restriction, not a bug here.",
     steps: [
       {
         title: "Register a developer account and create an app",
@@ -275,21 +275,11 @@ export const GUIDES = {
       },
       {
         title: "Add the Content Posting API product",
-        body: "In the app dashboard, add Content Posting API and fill in the required app details.",
-      },
-      {
-        title: "Verify your video-hosting domain",
-        body: "App dashboard → Domain verification → add the meta tag or DNS TXT record TikTok gives you, for the domain your video links live on. Skipping this makes every post fail with url_ownership_unverified.",
-        links: [{ label: "Domain verification docs", url: "https://developers.tiktok.com/doc/getting-started-domain-verification" }],
-      },
-      {
-        title: "Copy the client key and secret",
-        body: "Shown right on the app dashboard.",
-        fields: ["clientKey", "clientSecret"],
+        body: "In the app dashboard, add Content Posting API and request the video.publish scope.",
       },
       {
         title: "Get an access token",
-        body: "Run TikTok's OAuth login flow once for the account that will post. Until your app passes TikTok's Content Posting audit, every post is forced to SELF_ONLY (private) — that's expected, not a bug.",
+        body: "Run TikTok's OAuth login flow once for the account that will post, requesting video.publish scope, and copy the resulting access token.",
         fields: ["accessToken"],
         links: [{ label: "Login Kit docs", url: "https://developers.tiktok.com/doc/login-kit-web" }],
       },

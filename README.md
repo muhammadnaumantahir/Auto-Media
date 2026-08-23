@@ -62,10 +62,8 @@ a time:
 5. Move to the next ready row.
 
 YouTube, Telegram, Discord, Facebook (Pages), LinkedIn, Pinterest,
-Reddit, X, Instagram, and Threads actually post right now. TikTok
-shows up in results as "not built yet" rather than silently pretending
-to succeed — its Content Posting API is gated behind an app-audit
-process that no amount of code here can bypass.
+Reddit, X, Instagram, Threads, and TikTok all actually post right now —
+every platform from the original list.
 
 - **Telegram**: needs a bot token (from @BotFather) + a chat ID. No app
   review, works immediately.
@@ -110,6 +108,14 @@ process that no amount of code here can bypass.
 - **Threads**: needs a Threads User ID + an access token
   (threads_content_publish scope). Same URL-only requirement as
   Instagram, for the same reason — Threads fetches the video itself too.
+- **TikTok**: needs an access token with the video.publish scope. Works
+  before your app passes TikTok's audit, but with a real, hard
+  restriction until then — every post is forced to **SELF_ONLY
+  (private, visible only in your own TikTok app)**. Uploads the file
+  directly (no domain verification needed, unlike TikTok's URL-based
+  upload path) and has no public link to return while posts stay
+  private — the dashboard shows "posted (private)" instead of a link
+  for this one.
 
 ## Data storage
 
